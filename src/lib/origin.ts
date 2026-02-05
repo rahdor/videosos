@@ -1,6 +1,6 @@
 "use client";
 
-import { type Auth, createLicenseTerms } from "@campnetwork/origin";
+import { type Auth, createLicenseTerms, LicenseType } from "@campnetwork/origin";
 
 // Store auth instance globally for access outside React context
 let authInstance: Auth | null = null;
@@ -85,6 +85,7 @@ export async function mintOriginFile(
     license.duration,
     license.royaltyBps,
     license.paymentToken,
+    LicenseType.DURATION_BASED,
   );
 
   // Convert parent IDs to bigint array (max 8 parents supported)
