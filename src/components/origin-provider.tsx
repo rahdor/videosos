@@ -1,33 +1,32 @@
 "use client";
 
-import { useVideoProjectStore } from "@/data/store";
-import { clearOriginAuth, setOriginAuth } from "@/lib/origin";
-import type { Auth } from "@campnetwork/origin";
-import { CampProvider, useAuth, useAuthState } from "@campnetwork/origin/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CampProvider, useAuth, useAuthState } from "@campnetwork/origin/react";
+import { useVideoProjectStore } from "@/data/store";
+import { setOriginAuth, clearOriginAuth } from "@/lib/origin";
 
-// Create a separate query client for Origin to avoid conflicts
-const originQueryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 type OriginProviderProps = {
   children: React.ReactNode;
   clientId: string;
-  appId?: string;
 };
 
-// Inner component that syncs Origin auth state with Zustand store
-function OriginAuthSync() {
-  const auth = useAuth() as unknown as Auth | null;
+// Syncs Origin auth state with Zustand store and lib/origin
+function AuthSync() {
+  const auth = useAuth();
   const { authenticated, loading } = useAuthState();
   const setWalletAddress = useVideoProjectStore((s) => s.setWalletAddress);
 
   useEffect(() => {
     if (authenticated && auth) {
-      setOriginAuth(auth);
-      // Get wallet address from auth instance
-      const address = auth.walletAddress || null;
-      setWalletAddress(address);
+      // Sync to lib/origin for mint/import functions
+      setOriginAuth(auth as any);
+      // Sync wallet address to Zustand store
+      if (auth.walletAddress) {
+        setWalletAddress(auth.walletAddress);
+      }
     } else if (!loading) {
       clearOriginAuth();
       setWalletAddress(null);
@@ -37,21 +36,15 @@ function OriginAuthSync() {
   return null;
 }
 
-export function OriginProvider({
-  children,
-  clientId,
-  appId,
-}: OriginProviderProps) {
-  // If no clientId provided, render children without Origin features
+export function OriginProvider({ children, clientId }: OriginProviderProps) {
   if (!clientId) {
     return <>{children}</>;
   }
 
   return (
-    <QueryClientProvider client={originQueryClient}>
-      {/* @ts-expect-error - SDK types require appId but docs say it's optional */}
-      <CampProvider clientId={clientId} appId={appId}>
-        <OriginAuthSync />
+    <QueryClientProvider client={queryClient}>
+      <CampProvider clientId={clientId}>
+        <AuthSync />
         {children}
       </CampProvider>
     </QueryClientProvider>

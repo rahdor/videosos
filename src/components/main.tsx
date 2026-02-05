@@ -21,11 +21,10 @@ import { OriginProvider } from "./origin-provider";
 import { ProjectDialog } from "./project-dialog";
 import { ToastProvider } from "./ui/toast";
 import { Toaster } from "./ui/toaster";
-import { WalletDialog } from "./wallet-dialog";
+import { CampModal } from "@campnetwork/origin/react";
 
-// Origin client ID and app ID - can be configured via environment variables
+// Origin client ID - get from https://camp.network
 const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
-const ORIGIN_APP_ID = process.env.NEXT_PUBLIC_ORIGIN_APP_ID || "";
 
 type AppProps = {
   projectId: string;
@@ -57,11 +56,6 @@ export function App({ projectId }: AppProps) {
     (s) => s.setExportDialogOpen,
   );
   // Origin dialog states
-  const walletDialogOpen = useStore(projectStore, (s) => s.walletDialogOpen);
-  const setWalletDialogOpen = useStore(
-    projectStore,
-    (s) => s.setWalletDialogOpen,
-  );
   const mintDialogOpen = useStore(projectStore, (s) => s.mintDialogOpen);
   const setMintDialogOpen = useStore(projectStore, (s) => s.setMintDialogOpen);
   const importOriginDialogOpen = useStore(
@@ -76,7 +70,7 @@ export function App({ projectId }: AppProps) {
     <ToastProvider>
       <QueryClientProvider client={queryClient}>
         <VideoProjectStoreContext.Provider value={projectStore}>
-          <OriginProvider clientId={ORIGIN_CLIENT_ID} appId={ORIGIN_APP_ID}>
+          <OriginProvider clientId={ORIGIN_CLIENT_ID}>
             <div className="flex flex-col relative overflow-x-hidden h-screen bg-background">
               <Header openKeyDialog={() => setKeyDialog(true)} />
               <main className="flex overflow-hidden h-full w-screen">
@@ -103,11 +97,8 @@ export function App({ projectId }: AppProps) {
               onOpenChange={handleOnSheetOpenChange}
               selectedMediaId={selectedMediaId ?? ""}
             />
-            {/* Origin Protocol dialogs */}
-            <WalletDialog
-              open={walletDialogOpen}
-              onOpenChange={setWalletDialogOpen}
-            />
+            {/* Origin Protocol - CampModal handles wallet connection */}
+            <CampModal injectButton={false} />
             <MintDialog
               open={mintDialogOpen}
               onOpenChange={(open) => setMintDialogOpen(open)}

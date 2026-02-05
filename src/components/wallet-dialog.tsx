@@ -1,7 +1,7 @@
 "use client";
 
 import { useVideoProjectStore } from "@/data/store";
-import { CampModal, useAuthState, useConnect } from "@campnetwork/origin/react";
+import { CampModal, useAuth, useAuthState } from "@campnetwork/origin/react";
 import { CheckCircle2, LogOutIcon, WalletIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -20,15 +20,13 @@ export function WalletDialog({
   open,
   ...props
 }: WalletDialogProps) {
-  const { authenticated, loading } = useAuthState();
-  const { disconnect } = useConnect();
+  const auth = useAuth();
+  const { authenticated } = useAuthState();
   const walletAddress = useVideoProjectStore((s) => s.walletAddress);
 
-  const handleDisconnect = async () => {
-    try {
-      await disconnect();
-    } catch (error) {
-      console.error("Failed to disconnect:", error);
+  const handleDisconnect = () => {
+    if (auth) {
+      auth.disconnect();
     }
   };
 
@@ -55,8 +53,8 @@ export function WalletDialog({
         </DialogHeader>
 
         <div className="py-4">
-          {authenticated && walletAddress ? (
-            <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
+            {authenticated && walletAddress && (
               <div className="bg-accent/50 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground mb-1">
                   Connected Address
@@ -68,21 +66,16 @@ export function WalletDialog({
                   </code>
                 </div>
               </div>
-              <Button variant="destructive" onClick={handleDisconnect}>
+            )}
+            {/* CampModal shows Connect or My Origin based on auth state */}
+            <CampModal />
+            {authenticated && (
+              <Button variant="outline" onClick={handleDisconnect}>
                 <LogOutIcon className="w-4 h-4 mr-2" />
-                Disconnect
+                Sign Out of Origin
               </Button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              <p className="text-sm text-muted-foreground">
-                Use the Camp Modal to connect your wallet and link social
-                accounts.
-              </p>
-              {/* CampModal provides the wallet connection UI */}
-              <CampModal />
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <DialogFooter>

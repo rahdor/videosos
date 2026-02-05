@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  type Auth,
-  LicenseType,
-  createLicenseTerms,
-} from "@campnetwork/origin";
+import { type Auth, createLicenseTerms } from "@campnetwork/origin";
 
 // Store auth instance globally for access outside React context
 let authInstance: Auth | null = null;
@@ -89,9 +85,6 @@ export async function mintOriginFile(
     license.duration,
     license.royaltyBps,
     license.paymentToken,
-    license.duration > 0
-      ? LicenseType.DURATION_BASED
-      : LicenseType.SINGLE_PAYMENT,
   );
 
   // Convert parent IDs to bigint array (max 8 parents supported)
@@ -100,13 +93,16 @@ export async function mintOriginFile(
       ? parentIds.slice(0, 8).map((id) => BigInt(id))
       : undefined;
 
+  console.log("[Origin] Minting file:", fileToMint.name, "License:", licenseTerms);
+
   const result = await auth.origin.mintFile(
     fileToMint,
     metadataObj,
     licenseTerms,
     parents,
-    onProgress ? { progressCallback: onProgress } : undefined,
   );
+
+  console.log("[Origin] Mint result:", result);
 
   if (!result) {
     throw new Error("Minting failed - no token ID returned");

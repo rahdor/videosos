@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { useVideoProjectStore } from "@/data/store";
-import { CheckCircle2, SettingsIcon, WalletIcon } from "lucide-react";
+import { CheckCircle2, SettingsIcon, WalletIcon, LogOutIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "./language-switcher";
 import { Logo } from "./logo";
+import { useModal, useAuth, useAuthState } from "@campnetwork/origin/react";
 
 export default function Header({
   openKeyDialog,
@@ -18,9 +19,21 @@ export default function Header({
   const locale = useLocale();
   const [showKeyWarning, setShowKeyWarning] = useState(false);
   const walletAddress = useVideoProjectStore((s) => s.walletAddress);
-  const setWalletDialogOpen = useVideoProjectStore(
-    (s) => s.setWalletDialogOpen,
-  );
+
+  // Origin hooks
+  const { openModal } = useModal();
+  const auth = useAuth();
+  const { authenticated } = useAuthState();
+
+  const handleWalletClick = () => {
+    openModal();
+  };
+
+  const handleDisconnect = () => {
+    if (auth) {
+      auth.disconnect();
+    }
+  };
 
   useEffect(() => {
     // Check localStorage only on client side after hydration
@@ -50,7 +63,7 @@ export default function Header({
           variant="ghost"
           size="icon"
           className="relative"
-          onClick={() => setWalletDialogOpen(true)}
+          onClick={handleWalletClick}
           title={walletAddress ? "Wallet connected" : "Connect wallet"}
         >
           <WalletIcon className="w-5 h-5" />
@@ -58,6 +71,16 @@ export default function Header({
             <CheckCircle2 className="w-3 h-3 absolute -bottom-0.5 -right-0.5 text-green-500 fill-background" />
           )}
         </Button>
+        {authenticated && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDisconnect}
+            title="Disconnect wallet"
+          >
+            <LogOutIcon className="w-5 h-5" />
+          </Button>
+        )}
         {openKeyDialog && (
           <Button
             variant="ghost"

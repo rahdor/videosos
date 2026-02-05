@@ -15,7 +15,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@campnetwork/origin": "^1.3.1",
+    "@campnetwork/origin": "^1.2.5",
     "@fal-ai/client": "^1.2.1",
     "@fal-ai/server-proxy": "^1.1.1",
     "@ffmpeg/ffmpeg": "^0.12.15",

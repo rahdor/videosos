@@ -51,7 +51,8 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
   // Form state
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [priceEth, setPriceEth] = useState("0");
+  const [priceEth, setPriceEth] = useState("0.001"); // Minimum 0.001 CAMP
+  const [durationDays, setDurationDays] = useState(7); // 1-30 days
   const [royaltyPercent, setRoyaltyPercent] = useState(10);
   const [commercialUse, setCommercialUse] = useState(true);
   const [derivativesAllowed, setDerivativesAllowed] = useState(true);
@@ -109,8 +110,8 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
       }
 
       const license: SimpleLicenseTerms = {
-        price: ethToWei(Number.parseFloat(priceEth) || 0),
-        duration: 0, // Perpetual
+        price: ethToWei(Number.parseFloat(priceEth) || 0.001),
+        duration: durationDays * 86400, // Convert days to seconds (1 day = 86400s)
         royaltyBps: percentToBps(royaltyPercent),
         paymentToken: "0x0000000000000000000000000000000000000000",
       };
@@ -155,7 +156,8 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
     // Reset form
     setName("");
     setDescription("");
-    setPriceEth("0");
+    setPriceEth("0.001");
+    setDurationDays(7);
     setRoyaltyPercent(10);
     setCommercialUse(true);
     setDerivativesAllowed(true);
@@ -236,18 +238,33 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
             </h4>
 
             <div className="space-y-2">
-              <Label htmlFor="mint-price">Price (ETH)</Label>
+              <Label htmlFor="mint-price">Price (CAMP)</Label>
               <Input
                 id="mint-price"
                 type="number"
                 step="0.001"
-                min="0"
+                min="0.001"
                 value={priceEth}
                 onChange={(e) => setPriceEth(e.target.value)}
                 disabled={mintMutation.isPending}
               />
               <p className="text-xs text-muted-foreground">
-                Set to 0 for free access
+                Minimum 0.001 CAMP
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>License Duration: {durationDays} day{durationDays !== 1 ? 's' : ''}</Label>
+              <Slider
+                value={[durationDays]}
+                onValueChange={([val]) => setDurationDays(val)}
+                min={1}
+                max={30}
+                step={1}
+                disabled={mintMutation.isPending}
+              />
+              <p className="text-xs text-muted-foreground">
+                How long buyers have access (1-30 days)
               </p>
             </div>
 
@@ -256,13 +273,13 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
               <Slider
                 value={[royaltyPercent]}
                 onValueChange={([val]) => setRoyaltyPercent(val)}
-                min={0}
+                min={1}
                 max={50}
                 step={1}
                 disabled={mintMutation.isPending}
               />
               <p className="text-xs text-muted-foreground">
-                Percentage you receive from secondary sales
+                Percentage you receive from secondary sales (min 1%)
               </p>
             </div>
 
