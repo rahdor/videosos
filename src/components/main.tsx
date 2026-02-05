@@ -8,6 +8,7 @@ import {
   VideoProjectStoreContext,
   createVideoProjectStore,
 } from "@/data/store";
+import { CampModal } from "@campnetwork/origin/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useStore } from "zustand";
@@ -21,7 +22,6 @@ import { OriginProvider } from "./origin-provider";
 import { ProjectDialog } from "./project-dialog";
 import { ToastProvider } from "./ui/toast";
 import { Toaster } from "./ui/toaster";
-import { CampModal } from "@campnetwork/origin/react";
 
 // Origin client ID - get from https://camp.network
 const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";

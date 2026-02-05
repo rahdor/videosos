@@ -2,13 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { useVideoProjectStore } from "@/data/store";
-import { CheckCircle2, SettingsIcon, WalletIcon, LogOutIcon } from "lucide-react";
+import { useAuth, useAuthState, useModal } from "@campnetwork/origin/react";
+import {
+  CheckCircle2,
+  LogOutIcon,
+  SettingsIcon,
+  WalletIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "./language-switcher";
 import { Logo } from "./logo";
-import { useModal, useAuth, useAuthState } from "@campnetwork/origin/react";
 
 export default function Header({
   openKeyDialog,

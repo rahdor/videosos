@@ -254,7 +254,10 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>License Duration: {durationDays} day{durationDays !== 1 ? 's' : ''}</Label>
+              <Label>
+                License Duration: {durationDays} day
+                {durationDays !== 1 ? "s" : ""}
+              </Label>
               <Slider
                 value={[durationDays]}
                 onValueChange={([val]) => setDurationDays(val)}

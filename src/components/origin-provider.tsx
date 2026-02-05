@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { CampProvider, useAuth, useAuthState } from "@campnetwork/origin/react";
 import { useVideoProjectStore } from "@/data/store";
-import { setOriginAuth, clearOriginAuth } from "@/lib/origin";
+import { clearOriginAuth, setOriginAuth } from "@/lib/origin";
+import { CampProvider, useAuth, useAuthState } from "@campnetwork/origin/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -43,7 +43,7 @@ export function OriginProvider({ children, clientId }: OriginProviderProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CampProvider clientId={clientId}>
+      <CampProvider clientId={clientId} appId={clientId}>
         <AuthSync />
         {children}
       </CampProvider>

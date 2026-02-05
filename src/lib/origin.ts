@@ -93,7 +93,12 @@ export async function mintOriginFile(
       ? parentIds.slice(0, 8).map((id) => BigInt(id))
       : undefined;
 
-  console.log("[Origin] Minting file:", fileToMint.name, "License:", licenseTerms);
+  console.log(
+    "[Origin] Minting file:",
+    fileToMint.name,
+    "License:",
+    licenseTerms,
+  );
 
   const result = await auth.origin.mintFile(
     fileToMint,
