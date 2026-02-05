@@ -13,7 +13,7 @@ const originQueryClient = new QueryClient();
 type OriginProviderProps = {
   children: React.ReactNode;
   clientId: string;
-  appId: string;
+  appId?: string;
 };
 
 // Inner component that syncs Origin auth state with Zustand store
@@ -42,13 +42,14 @@ export function OriginProvider({
   clientId,
   appId,
 }: OriginProviderProps) {
-  // If no clientId or appId provided, render children without Origin features
-  if (!clientId || !appId) {
+  // If no clientId provided, render children without Origin features
+  if (!clientId) {
     return <>{children}</>;
   }
 
   return (
     <QueryClientProvider client={originQueryClient}>
+      {/* @ts-expect-error - SDK types require appId but docs say it's optional */}
       <CampProvider clientId={clientId} appId={appId}>
         <OriginAuthSync />
         {children}
