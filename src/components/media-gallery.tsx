@@ -13,6 +13,7 @@ import { RUNWARE_ENDPOINTS } from "@/lib/runware-models";
 import { cn, resolveMediaUrl } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDuration } from "date-fns";
+import { useModal } from "@campnetwork/origin/react";
 import {
   CoinsIcon,
   CopyIcon,
@@ -141,9 +142,7 @@ export function MediaGallerySheet({
   const onGenerate = useVideoProjectStore((s) => s.onGenerate);
   const walletAddress = useVideoProjectStore((s) => s.walletAddress);
   const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
-  const setWalletDialogOpen = useVideoProjectStore(
-    (s) => s.setWalletDialogOpen,
-  );
+  const { openModal } = useModal();
 
   const handleUpscaleDialog = () => {
     setGenerateMediaType("video");
@@ -189,7 +188,7 @@ export function MediaGallerySheet({
 
   const handleMintAsIP = () => {
     if (!walletAddress) {
-      setWalletDialogOpen(true);
+      openModal();
       return;
     }
     setMintDialogOpen(true, { mediaId: selectedMediaId });

@@ -1,6 +1,10 @@
 "use client";
 
-import { type Auth, createLicenseTerms, LicenseType } from "@campnetwork/origin";
+import {
+  type Auth,
+  LicenseType,
+  createLicenseTerms,
+} from "@campnetwork/origin";
 
 // Store auth instance globally for access outside React context
 let authInstance: Auth | null = null;

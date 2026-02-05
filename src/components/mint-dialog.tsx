@@ -14,6 +14,7 @@ import {
   mintOriginFile,
   percentToBps,
 } from "@/lib/origin";
+import { useModal } from "@campnetwork/origin/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertCircleIcon, CoinsIcon, ShieldCheckIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -41,9 +42,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
   const mintDialogData = useVideoProjectStore((s) => s.mintDialogData);
   const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
   const walletAddress = useVideoProjectStore((s) => s.walletAddress);
-  const setWalletDialogOpen = useVideoProjectStore(
-    (s) => s.setWalletDialogOpen,
-  );
+  const { openModal } = useModal();
 
   const { data: mediaItems = [] } = useProjectMediaItems(projectId);
   const { data: composition } = useVideoComposition(projectId);
@@ -197,7 +196,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
                 <button
                   type="button"
                   className="underline hover:text-yellow-400"
-                  onClick={() => setWalletDialogOpen(true)}
+                  onClick={() => openModal()}
                 >
                   connect your wallet
                 </button>{" "}

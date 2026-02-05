@@ -10,6 +10,7 @@ import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { exportVideoClientSide } from "@/lib/ffmpeg";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
+import { useModal } from "@campnetwork/origin/react";
 import { CoinsIcon, DownloadIcon, FilmIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -105,6 +106,10 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
 
       const videoUrl = URL.createObjectURL(videoBlob);
 
+      // Log file size for debugging content moderation issues
+      const fileSizeMB = (videoBlob.size / (1024 * 1024)).toFixed(2);
+      console.log(`[Export] Video blob size: ${videoBlob.size} bytes (${fileSizeMB} MB)`);
+
       return {
         video_url: videoUrl,
         thumbnail_url: "",
@@ -123,9 +128,7 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
   );
   const walletAddress = useVideoProjectStore((s) => s.walletAddress);
   const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
-  const setWalletDialogOpen = useVideoProjectStore(
-    (s) => s.setWalletDialogOpen,
-  );
+  const { openModal } = useModal();
 
   const handleOnOpenChange = (open: boolean) => {
     setExportDialogOpen(open);
@@ -134,7 +137,7 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
 
   const handleMintAsIP = () => {
     if (!walletAddress) {
-      setWalletDialogOpen(true);
+      openModal();
       return;
     }
     if (exportVideo.data?.blob) {
