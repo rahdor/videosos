@@ -133,6 +133,10 @@ export function MediaItemRow({
           console.error("[DEBUG] requestId is missing for FAL job!", data);
           throw new Error("requestId is required for fal provider");
         }
+        if (!data.endpointId) {
+          console.error("[DEBUG] endpointId is missing for FAL job!", data);
+          throw new Error("endpointId is required for fal provider");
+        }
         const queueStatus = await fal.queue.status(data.endpointId, {
           requestId: data.requestId,
         });
@@ -661,7 +665,14 @@ export function MediaItemRow({
                   <code className="text-muted-foreground">#{mediaId}</code>
                 </>
               )}
-              {data.kind === "uploaded" ? (
+              {data.kind === "origin" ? (
+                <Badge
+                  variant="outline"
+                  className="text-xs ml-1 border-purple-500 text-purple-400"
+                >
+                  Origin
+                </Badge>
+              ) : data.kind === "uploaded" ? (
                 <Badge variant="outline" className="text-xs ml-1">
                   Uploaded
                 </Badge>

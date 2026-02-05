@@ -14,6 +14,7 @@ import { cn, resolveMediaUrl } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDuration } from "date-fns";
 import {
+  CoinsIcon,
   CopyIcon,
   FilmIcon,
   ImageUpscale,
@@ -138,6 +139,11 @@ export function MediaGallerySheet({
     (s) => s.setGenerateMediaType,
   );
   const onGenerate = useVideoProjectStore((s) => s.onGenerate);
+  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
+  const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
+  const setWalletDialogOpen = useVideoProjectStore(
+    (s) => s.setWalletDialogOpen,
+  );
 
   const handleUpscaleDialog = () => {
     setGenerateMediaType("video");
@@ -179,6 +185,15 @@ export function MediaGallerySheet({
     setGenerateData(selectedMedia.input || {});
     setSelectedMediaId(null);
     onGenerate();
+  };
+
+  const handleMintAsIP = () => {
+    if (!walletAddress) {
+      setWalletDialogOpen(true);
+      return;
+    }
+    setMintDialogOpen(true, { mediaId: selectedMediaId });
+    close();
   };
 
   // Event handlers
@@ -336,6 +351,19 @@ export function MediaGallerySheet({
                 )}
                 {t("delete")}
               </Button>
+              {selectedMedia.status === "completed" && selectedMedia.blob && (
+                <Button
+                  onClick={handleMintAsIP}
+                  variant="secondary"
+                  disabled={deleteMedia.isPending}
+                  title={
+                    walletAddress ? "Mint as IP NFT" : "Connect wallet to mint"
+                  }
+                >
+                  <CoinsIcon className="w-4 h-4 opacity-50" />
+                  {walletAddress ? "Mint as IP" : "Connect to Mint"}
+                </Button>
+              )}
             </div>
             <div className="flex-1 flex flex-col gap-2 justify-end overflow-y-auto">
               <MediaPropertyItem

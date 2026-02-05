@@ -23,6 +23,12 @@ export type GenerateData = {
   [key: string]: any;
 };
 
+// Mint dialog data type
+export type MintDialogData = {
+  mediaId: string | null;
+  exportedBlob: Blob | null;
+};
+
 interface VideoProjectProps {
   projectId: string;
   timelineDuration: number;
@@ -37,6 +43,12 @@ interface VideoProjectProps {
   generateData: GenerateData;
   exportDialogOpen: boolean;
   endpointId: string;
+  // Origin/Wallet state
+  walletAddress: string | null;
+  walletDialogOpen: boolean;
+  mintDialogOpen: boolean;
+  mintDialogData: MintDialogData | null;
+  importOriginDialogOpen: boolean;
 }
 
 interface VideoProjectState extends VideoProjectProps {
@@ -56,6 +68,11 @@ interface VideoProjectState extends VideoProjectProps {
   setExportDialogOpen: (open: boolean) => void;
   setEndpointId: (endpointId: string) => void;
   onGenerate: () => void;
+  // Origin/Wallet actions
+  setWalletAddress: (address: string | null) => void;
+  setWalletDialogOpen: (open: boolean) => void;
+  setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob }) => void;
+  setImportOriginDialogOpen: (open: boolean) => void;
 }
 
 const DEFAULT_PROPS: VideoProjectProps = {
@@ -79,6 +96,12 @@ const DEFAULT_PROPS: VideoProjectProps = {
     audio_url: null,
   },
   exportDialogOpen: false,
+  // Origin/Wallet defaults
+  walletAddress: null,
+  walletDialogOpen: false,
+  mintDialogOpen: false,
+  mintDialogData: null,
+  importOriginDialogOpen: false,
 };
 
 type VideoProjectStore = ReturnType<typeof createVideoProjectStore>;
@@ -143,6 +166,18 @@ export const createVideoProjectStore = (
     },
     setExportDialogOpen: (exportDialogOpen: boolean) =>
       set({ exportDialogOpen }),
+    // Origin/Wallet actions
+    setWalletAddress: (walletAddress: string | null) => set({ walletAddress }),
+    setWalletDialogOpen: (walletDialogOpen: boolean) => set({ walletDialogOpen }),
+    setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob }) =>
+      set({
+        mintDialogOpen: open,
+        mintDialogData: open
+          ? { mediaId: data?.mediaId ?? null, exportedBlob: data?.exportedBlob ?? null }
+          : null,
+      }),
+    setImportOriginDialogOpen: (importOriginDialogOpen: boolean) =>
+      set({ importOriginDialogOpen }),
   }));
 };
 

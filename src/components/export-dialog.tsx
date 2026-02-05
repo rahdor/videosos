@@ -10,7 +10,7 @@ import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { exportVideoClientSide } from "@/lib/ffmpeg";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { DownloadIcon, FilmIcon } from "lucide-react";
+import { CoinsIcon, DownloadIcon, FilmIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "./ui/button";
@@ -121,9 +121,25 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
   const setExportDialogOpen = useVideoProjectStore(
     (s) => s.setExportDialogOpen,
   );
+  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
+  const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
+  const setWalletDialogOpen = useVideoProjectStore(
+    (s) => s.setWalletDialogOpen,
+  );
+
   const handleOnOpenChange = (open: boolean) => {
     setExportDialogOpen(open);
     onOpenChange?.(open);
+  };
+
+  const handleMintAsIP = () => {
+    if (!walletAddress) {
+      setWalletDialogOpen(true);
+      return;
+    }
+    if (exportVideo.data?.blob) {
+      setMintDialogOpen(true, { exportedBlob: exportVideo.data.blob });
+    }
   };
 
   const { data: project = PROJECT_PLACEHOLDER } = useProject(projectId);
@@ -187,6 +203,19 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
               <DownloadIcon className="w-4 h-4" />
               {t("download")}
             </a>
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={actionsDisabled || !exportVideo.data}
+            onClick={handleMintAsIP}
+            title={
+              walletAddress
+                ? "Mint as IP NFT on Origin Protocol"
+                : "Connect wallet to mint"
+            }
+          >
+            <CoinsIcon className="w-4 h-4" />
+            {walletAddress ? "Mint as IP" : "Connect to Mint"}
           </Button>
           <Button
             onClick={() => exportVideo.mutate()}

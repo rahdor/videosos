@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   ChevronDown,
   CloudUploadIcon,
+  DownloadCloudIcon,
   FilmIcon,
   FolderOpenIcon,
   GalleryVerticalIcon,
@@ -70,6 +71,9 @@ export default function LeftPanel() {
     (s) => s.setProjectDialogOpen,
   );
   const openGenerateDialog = useVideoProjectStore((s) => s.openGenerateDialog);
+  const setImportOriginDialogOpen = useVideoProjectStore(
+    (s) => s.setImportOriginDialogOpen,
+  );
   const [timelineDurationInput, setTimelineDurationInput] = useState(
     () =>
       `${((project.duration ?? DEFAULT_TIMELINE_DURATION_MS) / 1000).toFixed(2)}`,
@@ -371,6 +375,14 @@ export default function LeftPanel() {
                   <CloudUploadIcon className="w-4 h-4 opacity-50" />
                 )}
               </label>
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setImportOriginDialogOpen(true)}
+              title="Import from Origin Protocol"
+            >
+              <DownloadCloudIcon className="w-4 h-4 opacity-50" />
             </Button>
             <ProjectStatsDialog />
           </div>

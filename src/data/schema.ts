@@ -78,9 +78,11 @@ export type KeyFrameData = {
     }
 );
 
+import type { OriginMetadata } from "@/lib/origin";
+
 export type MediaItem = {
   id: string;
-  kind: "generated" | "uploaded";
+  kind: "generated" | "uploaded" | "origin";
   provider?: "fal" | "runware";
   endpointId?: string;
   requestId?: string;
@@ -95,6 +97,9 @@ export type MediaItem = {
   blob?: Blob;
   thumbnailBlob?: Blob;
   metadata?: Record<string, any>;
+  // Origin-specific fields (present when kind is "origin" or after minting)
+  originTokenId?: string;
+  originMetadata?: OriginMetadata;
 } & (
   | {
       kind: "generated";
@@ -109,5 +114,12 @@ export type MediaItem = {
       kind: "uploaded";
       url: string;
       blob?: Blob;
+    }
+  | {
+      kind: "origin";
+      originTokenId: string;
+      url: string;
+      blob?: Blob;
+      originMetadata: OriginMetadata;
     }
 );

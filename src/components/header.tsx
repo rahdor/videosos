@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SettingsIcon } from "lucide-react";
+import { useVideoProjectStore } from "@/data/store";
+import { CheckCircle2, SettingsIcon, WalletIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -16,6 +17,10 @@ export default function Header({
   const t = useTranslations("app.header");
   const locale = useLocale();
   const [showKeyWarning, setShowKeyWarning] = useState(false);
+  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
+  const setWalletDialogOpen = useVideoProjectStore(
+    (s) => s.setWalletDialogOpen,
+  );
 
   useEffect(() => {
     // Check localStorage only on client side after hydration
@@ -41,6 +46,18 @@ export default function Header({
           </a>
         </Button>
         <LanguageSwitcher />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative"
+          onClick={() => setWalletDialogOpen(true)}
+          title={walletAddress ? "Wallet connected" : "Connect wallet"}
+        >
+          <WalletIcon className="w-5 h-5" />
+          {walletAddress && (
+            <CheckCircle2 className="w-3 h-3 absolute -bottom-0.5 -right-0.5 text-green-500 fill-background" />
+          )}
+        </Button>
         {openKeyDialog && (
           <Button
             variant="ghost"
