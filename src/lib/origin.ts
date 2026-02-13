@@ -84,11 +84,35 @@ export async function mintOriginFile(
     throw new Error("Origin not initialized. Please reconnect your wallet.");
   }
 
-  // Convert Blob to File if needed
-  const fileToMint =
-    file instanceof File
-      ? file
-      : new File([file], "video.mp4", { type: "video/mp4" });
+  // Convert Blob to File if needed, detecting content type
+  let fileToMint: File;
+  if (file instanceof File) {
+    fileToMint = file;
+  } else {
+    // Detect file type from blob MIME type
+    const mimeType = file.type || "application/octet-stream";
+    const isImage = mimeType.startsWith("image/");
+    const isVideo = mimeType.startsWith("video/");
+
+    // Determine extension and filename
+    let filename = "content";
+    if (isImage) {
+      const ext =
+        mimeType === "image/png"
+          ? "png"
+          : mimeType === "image/gif"
+            ? "gif"
+            : mimeType === "image/webp"
+              ? "webp"
+              : "jpg";
+      filename = `image.${ext}`;
+    } else if (isVideo) {
+      const ext = mimeType === "video/webm" ? "webm" : "mp4";
+      filename = `video.${ext}`;
+    }
+
+    fileToMint = new File([file], filename, { type: mimeType });
+  }
 
   // Prepare metadata object
   const metadataObj: Record<string, unknown> = {

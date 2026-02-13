@@ -1,7 +1,12 @@
 "use client";
 
 import { useToast } from "@/hooks/use-toast";
-import { AVAILABLE_ENDPOINTS, calculateModelCost, fal } from "@/lib/fal";
+import {
+  AVAILABLE_ENDPOINTS,
+  type ApiInfo,
+  calculateModelCost,
+  fal,
+} from "@/lib/fal";
 import { extractVideoThumbnail } from "@/lib/ffmpeg";
 import {
   type SimpleLicenseTerms,
@@ -17,11 +22,14 @@ import {
   CheckCircle2,
   ChevronDown,
   ImageIcon,
+  InfoIcon,
   KeyIcon,
   Loader2,
   SparklesIcon,
+  TypeIcon,
   UploadIcon,
   VideoIcon,
+  XIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -48,12 +56,39 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Slider } from "./ui/slider";
 import { Textarea } from "./ui/textarea";
 import { Toaster } from "./ui/toaster";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 const ALL_ENDPOINTS = [...AVAILABLE_ENDPOINTS, ...RUNWARE_ENDPOINTS];
 const queryClient = new QueryClient();
 
 // Origin client ID
 const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
+
+// Helper to determine if endpoint requires image input
+function requiresImageInput(endpoint: ApiInfo): boolean {
+  return (
+    endpoint.inputAsset?.includes("image") ||
+    (Array.isArray(endpoint.inputAsset) &&
+      endpoint.inputAsset.some(
+        (a) => a === "image" || (typeof a === "object" && a.type === "image"),
+      )) ||
+    false
+  );
+}
+
+// Helper to get input type label
+function getInputTypeLabel(endpoint: ApiInfo): string {
+  const needsImage = requiresImageInput(endpoint);
+  if (endpoint.category === "video") {
+    return needsImage ? "Image → Video" : "Text → Video";
+  }
+  return needsImage ? "Image → Image" : "Text → Image";
+}
 
 type ContentType = "image" | "video";
 
@@ -62,6 +97,12 @@ interface GeneratedContent {
   url: string;
   type: ContentType;
   thumbnailBlob?: Blob | null;
+  isUploaded?: boolean; // Track if this was uploaded vs generated
+}
+
+interface ReferenceImage {
+  blob: Blob;
+  url: string;
 }
 
 function CreatePageInner() {
@@ -69,16 +110,20 @@ function CreatePageInner() {
   const { authenticated } = useAuthState();
   const { openModal } = useModal();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const referenceImageRef = useRef<HTMLInputElement>(null);
 
   // Key dialog state
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
-  const [hasApiKey, setHasApiKey] = useState(false);
+  const [hasFalKey, setHasFalKey] = useState(false);
+  const [hasRunwareKey, setHasRunwareKey] = useState(false);
 
-  // Check for API key on mount and when dialog closes
+  // Check for API keys on mount and when dialog closes
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally re-check when dialog closes
   useEffect(() => {
     const falKey = localStorage.getItem("falKey");
-    setHasApiKey(!!falKey);
+    const runwareKey = localStorage.getItem("runwareKey");
+    setHasFalKey(!!falKey);
+    setHasRunwareKey(!!runwareKey);
   }, [keyDialogOpen]);
 
   // Model & Generation State
@@ -88,44 +133,78 @@ function CreatePageInner() {
   const [endpointId, setEndpointId] = useState(ALL_ENDPOINTS[0].endpointId);
   const [prompt, setPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false); // Track if user has generated before
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [modelPickerOpen, setModelPickerOpen] = useState(false);
 
-  // Filter endpoints by mode
-  const imageEndpoints = useMemo(
-    () =>
-      ALL_ENDPOINTS.filter(
-        (e) =>
-          e.category === "image" ||
-          (!e.category && !e.endpointId.includes("video")),
-      ),
-    [],
+  // Reference image for Image→X models
+  const [referenceImage, setReferenceImage] = useState<ReferenceImage | null>(
+    null,
   );
 
-  const videoEndpoints = useMemo(
-    () =>
-      ALL_ENDPOINTS.filter(
-        (e) =>
-          e.category === "video" ||
-          e.endpointId.includes("video") ||
-          e.endpointId.includes("kling") ||
-          e.endpointId.includes("runway") ||
-          e.endpointId.includes("luma"),
-      ),
-    [],
-  );
+  // Filter endpoints by mode AND available API keys
+  const availableEndpoints = useMemo(() => {
+    return ALL_ENDPOINTS.filter((e) => {
+      // Filter by provider - only show models for providers with API keys
+      if (e.provider === "fal" && !hasFalKey) return false;
+      if (e.provider === "runware" && !hasRunwareKey) return false;
+      return true;
+    });
+  }, [hasFalKey, hasRunwareKey]);
 
-  const currentEndpoints =
-    generationMode === "image" ? imageEndpoints : videoEndpoints;
+  // Group image endpoints by input type
+  const imageEndpoints = useMemo(() => {
+    const all = availableEndpoints.filter(
+      (e) =>
+        e.category === "image" ||
+        (!e.category && !e.endpointId.includes("video")),
+    );
+    return {
+      textToImage: all.filter((e) => !requiresImageInput(e)),
+      imageToImage: all.filter((e) => requiresImageInput(e)),
+    };
+  }, [availableEndpoints]);
+
+  // Group video endpoints by input type
+  const videoEndpoints = useMemo(() => {
+    const all = availableEndpoints.filter(
+      (e) =>
+        e.category === "video" ||
+        e.endpointId.includes("video") ||
+        e.endpointId.includes("kling") ||
+        e.endpointId.includes("runway") ||
+        e.endpointId.includes("luma"),
+    );
+    return {
+      textToVideo: all.filter((e) => !requiresImageInput(e)),
+      imageToVideo: all.filter((e) => requiresImageInput(e)),
+    };
+  }, [availableEndpoints]);
 
   // Switch to first endpoint of new mode when mode changes
   const handleModeChange = (mode: "image" | "video") => {
     setGenerationMode(mode);
-    const endpoints = mode === "image" ? imageEndpoints : videoEndpoints;
-    if (endpoints.length > 0) {
-      setEndpointId(endpoints[0].endpointId);
+    // Get first available endpoint from the appropriate group
+    let firstEndpoint: ApiInfo | undefined;
+    if (mode === "image") {
+      firstEndpoint =
+        imageEndpoints.textToImage[0] || imageEndpoints.imageToImage[0];
+    } else {
+      firstEndpoint =
+        videoEndpoints.textToVideo[0] || videoEndpoints.imageToVideo[0];
     }
+    if (firstEndpoint) {
+      setEndpointId(firstEndpoint.endpointId);
+    }
+    // Clear reference image when switching modes
+    setReferenceImage(null);
   };
+
+  // Check if current endpoint requires image input
+  const currentRequiresImage = useMemo(() => {
+    const endpoint = ALL_ENDPOINTS.find((e) => e.endpointId === endpointId);
+    return endpoint ? requiresImageInput(endpoint) : false;
+  }, [endpointId]);
 
   // Advanced params
   const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16" | "1:1">(
@@ -170,11 +249,47 @@ function CreatePageInner() {
     return calculateModelCost(endpointId, { duration });
   }, [endpointId, duration]);
 
+  // Handle reference image upload
+  const handleReferenceImageUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        toast({
+          title: "Invalid file",
+          description: "Please upload an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      setReferenceImage({ blob: file, url });
+
+      // Reset input
+      if (referenceImageRef.current) {
+        referenceImageRef.current.value = "";
+      }
+    },
+    [toast],
+  );
+
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) {
       toast({
         title: "Prompt required",
         description: "Please enter a prompt to generate content",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if image input is required but not provided
+    if (currentRequiresImage && !referenceImage) {
+      toast({
+        title: "Reference image required",
+        description: "This model requires an image as input",
         variant: "destructive",
       });
       return;
@@ -189,6 +304,17 @@ function CreatePageInner() {
         prompt: prompt.trim(),
         ...(selectedEndpoint?.initialInput || {}),
       };
+
+      // Upload reference image if needed
+      if (currentRequiresImage && referenceImage) {
+        const imageUrl = await fal.storage.upload(referenceImage.blob);
+        // Different endpoints use different parameter names
+        if (selectedEndpoint?.inputMap?.image_url) {
+          input[selectedEndpoint.inputMap.image_url] = imageUrl;
+        } else {
+          input.image_url = imageUrl;
+        }
+      }
 
       // Handle aspect ratio / dimensions based on endpoint
       if (!isVideoEndpoint) {
@@ -288,7 +414,9 @@ function CreatePageInner() {
         url: URL.createObjectURL(blob),
         type,
         thumbnailBlob,
+        isUploaded: false,
       });
+      setHasGenerated(true);
 
       toast({
         title: "Content generated!",
@@ -305,7 +433,6 @@ function CreatePageInner() {
     } finally {
       setGenerating(false);
     }
-    // biome-ignore lint/correctness/useExhaustiveDependencies: selectedEndpoint is derived from endpointId
   }, [
     prompt,
     endpointId,
@@ -313,6 +440,8 @@ function CreatePageInner() {
     duration,
     isVideoEndpoint,
     selectedEndpoint,
+    currentRequiresImage,
+    referenceImage,
     toast,
   ]);
 
@@ -336,11 +465,13 @@ function CreatePageInner() {
         url,
         type,
         thumbnailBlob,
+        isUploaded: true,
       });
 
       toast({
         title: "File uploaded",
-        description: "Your content is ready to mint",
+        description:
+          "Your content is ready to mint. Note: You can mint any content you have rights to.",
       });
 
       // Reset input
@@ -445,7 +576,7 @@ function CreatePageInner() {
         </div>
 
         {/* API Key Warning */}
-        {!hasApiKey && (
+        {!hasFalKey && !hasRunwareKey && (
           <div className="rounded-lg border-2 border-orange-500/50 bg-orange-500/10 p-4">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5 shrink-0" />
@@ -454,8 +585,9 @@ function CreatePageInner() {
                   API Key Required
                 </h3>
                 <p className="text-sm text-orange-200/80 mt-1">
-                  You need a FAL API key to generate images and videos. Get one
-                  free at{" "}
+                  You need a FAL API key to generate images and videos. One key
+                  unlocks <strong>all models</strong> (Sora, Veo, Kling, FLUX,
+                  etc). Get one at{" "}
                   <a
                     href="https://fal.ai"
                     target="_blank"
@@ -511,46 +643,223 @@ function CreatePageInner() {
           <Popover open={modelPickerOpen} onOpenChange={setModelPickerOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full justify-between h-10">
-                <span className="truncate">
-                  {selectedEndpoint?.label || "Select a model"}
-                </span>
-                <ChevronDown className="h-4 w-4 opacity-50" />
+                <div className="flex items-center gap-2 truncate">
+                  {currentRequiresImage ? (
+                    <ImageIcon className="h-4 w-4 text-blue-400" />
+                  ) : (
+                    <TypeIcon className="h-4 w-4 text-green-400" />
+                  )}
+                  <span className="truncate">
+                    {selectedEndpoint?.label || "Select a model"}
+                  </span>
+                  {selectedEndpoint && (
+                    <span className="text-xs text-muted-foreground">
+                      ({getInputTypeLabel(selectedEndpoint)})
+                    </span>
+                  )}
+                </div>
+                <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-0" align="start">
+            <PopoverContent className="w-[450px] p-0" align="start">
               <Command>
                 <CommandInput placeholder="Search models..." />
-                <CommandList className="max-h-[300px]">
-                  <CommandEmpty>No models found.</CommandEmpty>
-                  <CommandGroup>
-                    {currentEndpoints.map((endpoint) => (
-                      <CommandItem
-                        key={endpoint.endpointId}
-                        value={endpoint.label}
-                        onSelect={() => {
-                          setEndpointId(endpoint.endpointId);
-                          setModelPickerOpen(false);
-                        }}
-                      >
-                        {generationMode === "video" ? (
-                          <VideoIcon className="mr-2 h-4 w-4" />
-                        ) : (
-                          <ImageIcon className="mr-2 h-4 w-4" />
-                        )}
-                        {endpoint.label}
-                        {endpoint.provider && (
-                          <span className="ml-auto text-xs text-muted-foreground">
-                            {endpoint.provider}
-                          </span>
-                        )}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                <CommandList className="max-h-[400px]">
+                  <CommandEmpty>
+                    {!hasFalKey && !hasRunwareKey
+                      ? "Add an API key to see available models"
+                      : "No models found."}
+                  </CommandEmpty>
+
+                  {generationMode === "image" ? (
+                    <>
+                      {imageEndpoints.textToImage.length > 0 && (
+                        <CommandGroup heading="Text → Image (describe what you want)">
+                          {imageEndpoints.textToImage.map((endpoint) => (
+                            <CommandItem
+                              key={endpoint.endpointId}
+                              value={`${endpoint.label} text to image`}
+                              onSelect={() => {
+                                setEndpointId(endpoint.endpointId);
+                                setModelPickerOpen(false);
+                                setReferenceImage(null);
+                              }}
+                            >
+                              <TypeIcon className="mr-2 h-4 w-4 text-green-400" />
+                              <span className="flex-1">{endpoint.label}</span>
+                              {endpoint.description && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      {endpoint.description}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                              <span className="ml-2 text-xs text-muted-foreground">
+                                {endpoint.cost || ""}
+                              </span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
+                      {imageEndpoints.imageToImage.length > 0 && (
+                        <CommandGroup heading="Image → Image (upload image + describe changes)">
+                          {imageEndpoints.imageToImage.map((endpoint) => (
+                            <CommandItem
+                              key={endpoint.endpointId}
+                              value={`${endpoint.label} image to image`}
+                              onSelect={() => {
+                                setEndpointId(endpoint.endpointId);
+                                setModelPickerOpen(false);
+                              }}
+                            >
+                              <ImageIcon className="mr-2 h-4 w-4 text-blue-400" />
+                              <span className="flex-1">{endpoint.label}</span>
+                              {endpoint.description && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      {endpoint.description}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                              <span className="ml-2 text-xs text-muted-foreground">
+                                {endpoint.cost || ""}
+                              </span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {videoEndpoints.textToVideo.length > 0 && (
+                        <CommandGroup heading="Text → Video (describe what you want)">
+                          {videoEndpoints.textToVideo.map((endpoint) => (
+                            <CommandItem
+                              key={endpoint.endpointId}
+                              value={`${endpoint.label} text to video`}
+                              onSelect={() => {
+                                setEndpointId(endpoint.endpointId);
+                                setModelPickerOpen(false);
+                                setReferenceImage(null);
+                              }}
+                            >
+                              <TypeIcon className="mr-2 h-4 w-4 text-green-400" />
+                              <span className="flex-1">{endpoint.label}</span>
+                              {endpoint.description && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      {endpoint.description}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                              <span className="ml-2 text-xs text-muted-foreground">
+                                {endpoint.cost || ""}
+                              </span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
+                      {videoEndpoints.imageToVideo.length > 0 && (
+                        <CommandGroup heading="Image → Video (upload image to animate)">
+                          {videoEndpoints.imageToVideo.map((endpoint) => (
+                            <CommandItem
+                              key={endpoint.endpointId}
+                              value={`${endpoint.label} image to video`}
+                              onSelect={() => {
+                                setEndpointId(endpoint.endpointId);
+                                setModelPickerOpen(false);
+                              }}
+                            >
+                              <ImageIcon className="mr-2 h-4 w-4 text-blue-400" />
+                              <span className="flex-1">{endpoint.label}</span>
+                              {endpoint.description && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      {endpoint.description}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                              <span className="ml-2 text-xs text-muted-foreground">
+                                {endpoint.cost || ""}
+                              </span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
+                    </>
+                  )}
                 </CommandList>
               </Command>
             </PopoverContent>
           </Popover>
         </div>
+
+        {/* Reference Image Upload (for Image→X models) */}
+        {currentRequiresImage && (
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-blue-400" />
+              Reference Image (required)
+            </Label>
+            {referenceImage ? (
+              <div className="relative rounded-lg border overflow-hidden bg-muted/30">
+                <img
+                  src={referenceImage.url}
+                  alt="Reference"
+                  className="w-full h-32 object-contain"
+                />
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2 h-6 w-6"
+                  onClick={() => setReferenceImage(null)}
+                >
+                  <XIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div
+                className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => referenceImageRef.current?.click()}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && referenceImageRef.current?.click()
+                }
+              >
+                <UploadIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Click to upload an image to transform
+                </p>
+              </div>
+            )}
+            <input
+              ref={referenceImageRef}
+              type="file"
+              accept="image/*"
+              onChange={handleReferenceImageUpload}
+              className="hidden"
+            />
+          </div>
+        )}
 
         {/* Preview Area */}
         <div
@@ -648,37 +957,70 @@ function CreatePageInner() {
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - only show if no content yet */}
+          {!content && (
+            <div className="flex gap-2">
+              <Button
+                className="flex-1"
+                onClick={handleGenerate}
+                disabled={
+                  generating ||
+                  !prompt.trim() ||
+                  (currentRequiresImage && !referenceImage)
+                }
+              >
+                {generating ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <SparklesIcon className="h-4 w-4 mr-2" />
+                )}
+                Generate
+                {estimatedCost !== null && ` (~$${estimatedCost.toFixed(3)})`}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <UploadIcon className="h-4 w-4 mr-2" />
+                Upload
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,video/*"
+                onChange={handleUpload}
+                className="hidden"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Generate Again button - shown after content is generated */}
+        {content && !mintSuccess && (
           <div className="flex gap-2">
             <Button
+              variant="outline"
               className="flex-1"
               onClick={handleGenerate}
-              disabled={generating || !prompt.trim()}
+              disabled={
+                generating ||
+                !prompt.trim() ||
+                (currentRequiresImage && !referenceImage)
+              }
             >
               {generating ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <SparklesIcon className="h-4 w-4 mr-2" />
               )}
-              Generate
+              Generate Again
               {estimatedCost !== null && ` (~$${estimatedCost.toFixed(3)})`}
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <UploadIcon className="h-4 w-4 mr-2" />
-              Upload
+            <Button variant="ghost" onClick={handleReset}>
+              Start Over
             </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,video/*"
-              onChange={handleUpload}
-              className="hidden"
-            />
           </div>
-        </div>
+        )}
 
         {/* Mint Section */}
         {content && !mintSuccess && (
