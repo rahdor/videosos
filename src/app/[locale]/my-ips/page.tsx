@@ -24,11 +24,13 @@ import { useCallback, useEffect, useState } from "react";
 const queryClient = new QueryClient();
 const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
 
-// Origin marketplace URL
-const ORIGIN_MARKETPLACE_URL = "https://origin.campnetwork.xyz";
+// Origin marketplace URL - configurable for testnet/mainnet
+const ORIGIN_MARKETPLACE_URL =
+  process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin.campnetwork.xyz";
 
-// Subgraph URL for querying user's IPs
+// Subgraph URL for querying user's IPs - configurable for testnet/mainnet
 const SUBGRAPH_URL =
+  process.env.NEXT_PUBLIC_ORIGIN_SUBGRAPH_URL ||
   "https://api.goldsky.com/api/public/project_clu8sr03ji34301z2b4xte1g5/subgraphs/camp-origin-testnet-upgradable/4.0.0/gn";
 
 interface IpNFT {
@@ -108,9 +110,7 @@ function IpCard({ ip, locale }: { ip: IpNFT; locale: string }) {
           {ip.name || "Untitled"}
         </h3>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {formatPrice(ip.price)}
-          </span>
+          <span className="text-muted-foreground">{formatPrice(ip.price)}</span>
           <Button size="sm" variant="ghost" asChild className="h-7 px-2">
             <a
               href={`${ORIGIN_MARKETPLACE_URL}/asset/${ip.tokenId}`}
@@ -211,7 +211,9 @@ function MyIPsPageInner() {
             // Not connected state
             <div className="flex flex-col items-center justify-center py-20">
               <WalletIcon className="h-16 w-16 text-muted-foreground/30 mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
+              <h2 className="text-xl font-semibold mb-2">
+                Connect Your Wallet
+              </h2>
               <p className="text-muted-foreground text-center max-w-md mb-6">
                 Connect your wallet to view your minted intellectual property
                 assets.
