@@ -95,6 +95,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
       }
 
       let fileToMint: Blob;
+      let thumbnailToUse: Blob | null = mintDialogData?.thumbnailBlob ?? null;
 
       if (mintDialogData?.exportedBlob) {
         fileToMint = mintDialogData.exportedBlob;
@@ -104,6 +105,10 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
           throw new Error("Media blob not available");
         }
         fileToMint = media.blob;
+        // Use media's thumbnail if not already provided
+        if (!thumbnailToUse && media.thumbnailBlob) {
+          thumbnailToUse = media.thumbnailBlob;
+        }
       } else {
         throw new Error("No file to mint");
       }
@@ -127,6 +132,9 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
         },
         license,
         parentTokenIds.length > 0 ? parentTokenIds : undefined,
+        {
+          previewImage: thumbnailToUse,
+        },
       );
 
       return tokenId;

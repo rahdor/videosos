@@ -3,6 +3,7 @@ import LandingFeatures from "@/components/landing-features";
 import LandingFooter from "@/components/landing-footer";
 import LandingHeader from "@/components/landing-header";
 import LandingHero from "@/components/landing-hero";
+import LandingHowItWorks from "@/components/landing-how-it-works";
 
 export default function LandingPage() {
   return (
@@ -10,6 +11,7 @@ export default function LandingPage() {
       <LandingHeader />
       <main>
         <LandingHero />
+        <LandingHowItWorks />
         <LandingFeatures />
         <LandingCommunity />
       </main>

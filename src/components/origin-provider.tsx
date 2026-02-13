@@ -1,7 +1,11 @@
 "use client";
 
 import { useVideoProjectStore } from "@/data/store";
-import { clearOriginAuth, setOriginAuth } from "@/lib/origin";
+import {
+  checkHasIpfsCredentials,
+  clearOriginAuth,
+  setOriginAuth,
+} from "@/lib/origin";
 import { CampProvider, useAuth, useAuthState } from "@campnetwork/origin/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -18,6 +22,9 @@ function AuthSync() {
   const auth = useAuth();
   const { authenticated, loading } = useAuthState();
   const setWalletAddress = useVideoProjectStore((s) => s.setWalletAddress);
+  const setHasIpfsCredentials = useVideoProjectStore(
+    (s) => s.setHasIpfsCredentials,
+  );
 
   useEffect(() => {
     if (authenticated && auth) {
@@ -27,11 +34,14 @@ function AuthSync() {
       if (auth.walletAddress) {
         setWalletAddress(auth.walletAddress);
       }
+      // Check if user has IPFS credentials configured
+      checkHasIpfsCredentials().then(setHasIpfsCredentials);
     } else if (!loading) {
       clearOriginAuth();
       setWalletAddress(null);
+      setHasIpfsCredentials(false);
     }
-  }, [authenticated, auth, loading, setWalletAddress]);
+  }, [authenticated, auth, loading, setWalletAddress, setHasIpfsCredentials]);
 
   return null;
 }

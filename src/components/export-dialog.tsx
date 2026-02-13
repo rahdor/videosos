@@ -7,10 +7,10 @@ import {
 } from "@/data/queries";
 import { PROJECT_PLACEHOLDER } from "@/data/schema";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
-import { exportVideoClientSide } from "@/lib/ffmpeg";
+import { exportVideoClientSide, extractVideoThumbnail } from "@/lib/ffmpeg";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
 import { useModal } from "@campnetwork/origin/react";
+import { useMutation } from "@tanstack/react-query";
 import { CoinsIcon, DownloadIcon, FilmIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -108,12 +108,23 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
 
       // Log file size for debugging content moderation issues
       const fileSizeMB = (videoBlob.size / (1024 * 1024)).toFixed(2);
-      console.log(`[Export] Video blob size: ${videoBlob.size} bytes (${fileSizeMB} MB)`);
+      console.log(
+        `[Export] Video blob size: ${videoBlob.size} bytes (${fileSizeMB} MB)`,
+      );
+
+      // Generate thumbnail from the exported video
+      const thumbnailBlob = await extractVideoThumbnail(videoUrl);
+      if (thumbnailBlob) {
+        console.log(
+          `[Export] Thumbnail generated: ${thumbnailBlob.size} bytes`,
+        );
+      }
 
       return {
         video_url: videoUrl,
         thumbnail_url: "",
         blob: videoBlob,
+        thumbnailBlob: thumbnailBlob,
       };
     },
     onError: (error) => {
@@ -141,7 +152,10 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
       return;
     }
     if (exportVideo.data?.blob) {
-      setMintDialogOpen(true, { exportedBlob: exportVideo.data.blob });
+      setMintDialogOpen(true, {
+        exportedBlob: exportVideo.data.blob,
+        thumbnailBlob: exportVideo.data.thumbnailBlob ?? undefined,
+      });
     }
   };
 

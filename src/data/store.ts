@@ -27,6 +27,7 @@ export type GenerateData = {
 export type MintDialogData = {
   mediaId: string | null;
   exportedBlob: Blob | null;
+  thumbnailBlob: Blob | null;
 };
 
 interface VideoProjectProps {
@@ -49,6 +50,7 @@ interface VideoProjectProps {
   mintDialogOpen: boolean;
   mintDialogData: MintDialogData | null;
   importOriginDialogOpen: boolean;
+  hasIpfsCredentials: boolean;
 }
 
 interface VideoProjectState extends VideoProjectProps {
@@ -71,8 +73,9 @@ interface VideoProjectState extends VideoProjectProps {
   // Origin/Wallet actions
   setWalletAddress: (address: string | null) => void;
   setWalletDialogOpen: (open: boolean) => void;
-  setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob }) => void;
+  setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob; thumbnailBlob?: Blob }) => void;
   setImportOriginDialogOpen: (open: boolean) => void;
+  setHasIpfsCredentials: (has: boolean) => void;
 }
 
 const DEFAULT_PROPS: VideoProjectProps = {
@@ -102,6 +105,7 @@ const DEFAULT_PROPS: VideoProjectProps = {
   mintDialogOpen: false,
   mintDialogData: null,
   importOriginDialogOpen: false,
+  hasIpfsCredentials: false,
 };
 
 type VideoProjectStore = ReturnType<typeof createVideoProjectStore>;
@@ -169,15 +173,17 @@ export const createVideoProjectStore = (
     // Origin/Wallet actions
     setWalletAddress: (walletAddress: string | null) => set({ walletAddress }),
     setWalletDialogOpen: (walletDialogOpen: boolean) => set({ walletDialogOpen }),
-    setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob }) =>
+    setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob; thumbnailBlob?: Blob }) =>
       set({
         mintDialogOpen: open,
         mintDialogData: open
-          ? { mediaId: data?.mediaId ?? null, exportedBlob: data?.exportedBlob ?? null }
+          ? { mediaId: data?.mediaId ?? null, exportedBlob: data?.exportedBlob ?? null, thumbnailBlob: data?.thumbnailBlob ?? null }
           : null,
       }),
     setImportOriginDialogOpen: (importOriginDialogOpen: boolean) =>
       set({ importOriginDialogOpen }),
+    setHasIpfsCredentials: (hasIpfsCredentials: boolean) =>
+      set({ hasIpfsCredentials }),
   }));
 };
 

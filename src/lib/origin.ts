@@ -6,6 +6,19 @@ import {
   createLicenseTerms,
 } from "@campnetwork/origin";
 
+// IPFS types (match SDK internal types)
+export type IpfsPinningProvider = "pinata" | "infura" | "web3storage";
+
+export type IpfsCredentials = {
+  provider: IpfsPinningProvider;
+  apiKey?: string;
+  apiSecret?: string;
+  jwt?: string;
+  token?: string;
+  projectId?: string;
+  projectSecret?: string;
+};
+
 // Store auth instance globally for access outside React context
 let authInstance: Auth | null = null;
 
@@ -55,7 +68,10 @@ export async function mintOriginFile(
   },
   license: SimpleLicenseTerms,
   parentIds?: string[],
-  onProgress?: (percent: number) => void,
+  options?: {
+    previewImage?: Blob | null;
+    onProgress?: (percent: number) => void;
+  },
 ): Promise<string> {
   const auth = getOriginAuth();
   if (!auth) {
@@ -98,11 +114,21 @@ export async function mintOriginFile(
       ? parentIds.slice(0, 8).map((id) => BigInt(id))
       : undefined;
 
+  // Convert preview blob to File if provided
+  let previewFile: File | null = null;
+  if (options?.previewImage) {
+    previewFile = new File([options.previewImage], "thumbnail.jpg", {
+      type: "image/jpeg",
+    });
+  }
+
   console.log(
     "[Origin] Minting file:",
     fileToMint.name,
     "License:",
     licenseTerms,
+    "Preview:",
+    previewFile ? "yes" : "no",
   );
 
   const result = await auth.origin.mintFile(
@@ -110,6 +136,10 @@ export async function mintOriginFile(
     metadataObj,
     licenseTerms,
     parents,
+    {
+      forceIpfs: true,
+      previewImage: previewFile,
+    },
   );
 
   console.log("[Origin] Mint result:", result);
@@ -229,4 +259,42 @@ export function weiToEth(wei: bigint): string {
 // Format ETH to wei for transactions
 export function ethToWei(eth: number): bigint {
   return BigInt(Math.floor(eth * 1e18));
+}
+
+// IPFS Credentials Management
+export async function saveUserIpfsCredentials(
+  credentials: IpfsCredentials,
+): Promise<void> {
+  const auth = getOriginAuth();
+  if (!auth?.origin) {
+    throw new Error("Origin not initialized. Please connect your wallet.");
+  }
+  await auth.origin.saveIpfsCredentials(credentials);
+}
+
+export async function verifyUserIpfsCredentials(): Promise<{
+  valid: boolean;
+  error?: string;
+}> {
+  const auth = getOriginAuth();
+  if (!auth?.origin) {
+    throw new Error("Origin not initialized. Please connect your wallet.");
+  }
+  return auth.origin.verifyIpfsCredentials();
+}
+
+export async function deleteUserIpfsCredentials(): Promise<void> {
+  const auth = getOriginAuth();
+  if (!auth?.origin) {
+    throw new Error("Origin not initialized. Please connect your wallet.");
+  }
+  await auth.origin.deleteIpfsCredentials();
+}
+
+export async function checkHasIpfsCredentials(): Promise<boolean> {
+  const auth = getOriginAuth();
+  if (!auth?.origin) {
+    return false;
+  }
+  return auth.origin.hasIpfsCredentials();
 }

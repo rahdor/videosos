@@ -11,9 +11,9 @@ import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { AVAILABLE_ENDPOINTS } from "@/lib/fal";
 import { RUNWARE_ENDPOINTS } from "@/lib/runware-models";
 import { cn, resolveMediaUrl } from "@/lib/utils";
+import { useModal } from "@campnetwork/origin/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDuration } from "date-fns";
-import { useModal } from "@campnetwork/origin/react";
 import {
   CoinsIcon,
   CopyIcon,
@@ -191,7 +191,10 @@ export function MediaGallerySheet({
       openModal();
       return;
     }
-    setMintDialogOpen(true, { mediaId: selectedMediaId });
+    setMintDialogOpen(true, {
+      mediaId: selectedMediaId,
+      thumbnailBlob: selectedMedia.thumbnailBlob ?? undefined,
+    });
     close();
   };
 

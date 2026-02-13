@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { LaptopMockup } from "@/components/ui/landing-laptop-mockup";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight, Github, Sparkles } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,42 +15,50 @@ export default function Hero() {
     <section className="pt-32 pb-16 md:pt-40 md:pb-24">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm mb-8">
-            <span className="text-gray-400">{t("badge")}</span>
-            <span className="ml-3 h-4 w-px bg-white/20" />
+          <div className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-sm mb-8">
             <a
               href="https://github.com/timoncool/videosos"
-              className="ml-3 flex items-center text-white hover:text-gray-300"
+              className="text-gray-400 hover:text-white transition-colors"
             >
-              {t("starGithub")} <ArrowRight className="ml-1 h-4 w-4" />
+              Built on VideoSOS
             </a>
+            <span className="mx-2 h-4 w-px bg-white/20" />
+            <Sparkles className="w-4 h-4 mr-2 text-purple-400" />
+            <span className="text-purple-300">{t("badge")}</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-            {t("title")}
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8">
+            <span className="bg-gradient-to-r from-white via-white to-gray-400 bg-clip-text text-transparent">
+              {t("title")}
+            </span>
             <br />
-            {t("subtitle")}
+            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              {t("subtitle")}
+            </span>
           </h1>
 
-          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12">
+          <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto mb-12">
             {t("description")}
           </p>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-16">
             <Button
               size="lg"
-              className="bg-white text-black hover:bg-gray-200 min-w-[200px]"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white min-w-[200px] h-12"
               asChild
             >
-              <Link href={`/${locale}/app`}>{t("tryNow")}</Link>
+              <Link href={`/${locale}/create`}>
+                {t("tryNow")}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="min-w-[200px]"
+              className="min-w-[200px] h-12 border-white/20 hover:bg-white/10"
               asChild
             >
-              <Link href="https://github.com/timoncool/videosos">
+              <Link href="https://github.com/anthropics/videosos">
                 <Github className="mr-2 h-5 w-5" />
                 {t("starGithub")}
               </Link>
@@ -59,7 +67,7 @@ export default function Hero() {
         </div>
 
         <div className="relative group max-w-6xl mx-auto">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/40 to-blue-500/40 blur-3xl opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/40 to-blue-500/40 blur-3xl opacity-30" />
           <LaptopMockup>
             <Image
               src="/screenshot-app.png"
@@ -71,8 +79,8 @@ export default function Hero() {
             />
           </LaptopMockup>
 
-          <div className="absolute -top-16 -right-16 w-32 h-32 bg-purple-500/30 rounded-full blur-3xl opacity-20" />
-          <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-blue-500/30 rounded-full blur-3xl opacity-20" />
+          <div className="absolute -top-16 -right-16 w-48 h-48 bg-purple-500/30 rounded-full blur-3xl opacity-30" />
+          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-blue-500/30 rounded-full blur-3xl opacity-30" />
         </div>
       </div>
     </section>

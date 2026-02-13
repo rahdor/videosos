@@ -4,64 +4,83 @@
       "features": "Features",
       "community": "Community",
       "github": "GitHub",
-      "tryNow": "Try it now"
+      "tryNow": "Start Creating"
     },
     "hero": {
-      "badge": "Now Open Source",
+      "badge": "Powered by Origin Protocol",
       "starGithub": "Star on GitHub",
-      "title": "VideoSOS",
-      "subtitle": "AI Video Editor",
-      "description": "A powerful, open-source AI video editor built for creators. Create stunning videos with our intuitive tools and 100+ AI models.",
-      "tryNow": "Try it now",
-      "imageAlt": "VideoSOS interface"
+      "title": "Create AI Content.",
+      "subtitle": "Own It Forever.",
+      "description": "Generate stunning videos with 100+ AI models, then mint them as intellectual property on Camp Network. License your creations, earn royalties, and maintain true ownership of your AI-generated content.",
+      "tryNow": "Start Creating",
+      "learnMore": "Learn About IP Licensing",
+      "imageAlt": "Origin Studio interface"
     },
     "features": {
-      "title": "Powerful features for modern creators",
-      "subtitle": "Everything you need to create professional-quality videos, available to everyone.",
+      "title": "From Creation to Ownership",
+      "subtitle": "Generate AI content, mint as intellectual property, and earn from your creations.",
+      "ipLicensing": {
+        "title": "IP Licensing & Royalties",
+        "description": "Transform your AI creations into licensed intellectual property using Camp Network's Origin Protocol. Set your own licensing terms, pricing, and duration. Earn royalties when others use your content."
+      },
+      "onChainOwnership": {
+        "title": "On-Chain Ownership",
+        "description": "Your minted content is registered as an IP Asset on Story Protocol. Get verifiable proof of creation, maintain full ownership rights, and build a portfolio of licensed digital assets."
+      },
       "dualAI": {
-        "title": "Dual AI Provider Support",
-        "description": "Access 100+ state-of-the-art AI models through fal.ai and Runware.ai. Generate images with FLUX and Ideogram V3, create videos with Veo 3 and Kling, compose music with Stable Audio, and produce natural voiceovers. Switch between providers seamlessly or use both simultaneously for maximum flexibility."
+        "title": "100+ AI Models",
+        "description": "Access state-of-the-art AI models through fal.ai and Runware.ai. Generate images with FLUX and Ideogram V3, create videos with Veo 3 and Kling, compose music with Stable Audio, and produce natural voiceovers."
       },
       "privacy": {
-        "title": "100% Privacy-First Architecture",
-        "description": "Everything runs locally in your browser. Your projects, media, and API keys are stored in IndexedDB on your device. No uploads, no tracking, no data collection."
+        "title": "Privacy-First Architecture",
+        "description": "Everything runs locally in your browser. Your projects, media, and API keys stay on your device. When you're ready, mint directly to IPFS and on-chain."
       },
       "timeline": {
-        "title": "Timeline Editor",
-        "description": "Advanced multi-track video editing with drag-and-drop functionality, precise keyframe control, audio waveform visualization, and real-time preview. Support for multiple aspect ratios (16:9, 9:16, 1:1) perfect for social media platforms."
+        "title": "Professional Studio",
+        "description": "Advanced multi-track video editing with drag-and-drop functionality. Simple mode for quick single-clip creation, or full Studio for complex multi-clip compositions."
       },
-      "multiModal": {
-        "title": "Multi-Modal Content Generation",
-        "description": "Create complete video projects with AI-generated images, videos, background music, and voiceovers. Advanced features include camera movement controls, video upscaling with Topaz, and automatic lip-sync for voiceovers."
+      "ipfsStorage": {
+        "title": "Decentralized Storage",
+        "description": "Store your content on IPFS with your own pinning credentials (Pinata, Infura, web3.storage). Your content remains accessible and permanent, independent of any single platform."
       },
       "clientSide": {
-        "title": "Client-Side Video Processing",
-        "description": "Powered by FFmpeg.wasm and Remotion for high-quality video rendering entirely in the browser. No server uploads, no waiting in queues. Export videos with proper audio mixing and precise timing control."
+        "title": "Browser-Based Rendering",
+        "description": "Powered by FFmpeg.wasm and Remotion for high-quality video rendering entirely in the browser. No server uploads, no waiting in queues. Export and mint in one seamless flow."
       },
-      "international": {
-        "title": "International & Accessible",
-        "description": "Full internationalization support (English/Russian) with keyboard shortcuts for power users. Intuitive UI designed for both beginners and professionals."
+      "openSource": {
+        "title": "Open Source",
+        "description": "Fully open-source and transparent. Inspect the code, contribute features, and build on top of the platform. Community-driven development for creators, by creators."
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "From idea to licensed IP in three simple steps",
+      "step1": {
+        "title": "Create",
+        "description": "Generate images and videos using 100+ AI models. Use simple mode for quick creations or Studio for complex compositions."
       },
-      "costTracking": {
-        "title": "Cost Tracking & Project Statistics",
-        "description": "Built-in cost tracking and comprehensive project analytics help you stay within budget. Track generation costs per media item, view total project expenses, and get detailed breakdowns by media type, AI provider, and model usage."
+      "step2": {
+        "title": "Mint",
+        "description": "Transform your content into an IP Asset. Set licensing terms, pricing, and duration. Your creation is registered on-chain with verifiable ownership."
       },
-      "modelSelection": {
-        "title": "Advanced Model Selection",
-        "description": "Enhanced model selection interface with intelligent search, filtering by provider (FAL/Runware), and categorization by type. Real-time pricing display for FAL models helps you make informed decisions before generating content."
+      "step3": {
+        "title": "Earn",
+        "description": "Others can license your IP for their projects. You earn royalties automatically. Build a portfolio of income-generating digital assets."
       }
     },
     "community": {
-      "title": "Join our community",
-      "description": "VideoSOS is an open-source project. Star us on GitHub and contribute to help shape the future of AI-powered video editing.",
-      "starGithub": "Star on GitHub"
+      "title": "Built on Camp Network",
+      "description": "Origin Protocol by Camp Network enables true IP ownership for digital creators. Join the ecosystem of creators who own their work.",
+      "starGithub": "Star on GitHub",
+      "learnMore": "Learn About Camp Network"
     },
     "footer": {
-      "appName": "VideoSOS",
-      "tagline": "Open-source AI video editor built for creators.",
+      "appName": "Origin Studio",
+      "tagline": "Create AI content. Own it forever.",
       "credits": "Credits",
       "community": "Community",
-      "github": "GitHub"
+      "github": "GitHub",
+      "camp": "Camp Network"
     }
   },
   "app": {

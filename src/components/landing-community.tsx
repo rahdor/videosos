@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DiscIcon as Discord, Github, Twitter } from "lucide-react";
+import { ExternalLink, Github } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
@@ -11,12 +11,34 @@ export default function Community() {
   return (
     <section id="community" className="py-20 border-t border-white/10">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">{t("title")}</h2>
-          <p className="text-gray-400 mb-8">{t("description")}</p>
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 mb-6">
+            <svg
+              className="w-8 h-8 text-purple-400"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              role="img"
+              aria-label="Camp Network"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("title")}</h2>
+          <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+            {t("description")}
+          </p>
 
-          <div className="flex justify-center">
-            <Link href="https://github.com/timoncool/videosos">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="https://www.campnetwork.xyz/">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500"
+              >
+                {t("learnMore")}
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="https://github.com/anthropics/videosos">
               <Button variant="outline" size="lg">
                 <Github className="mr-2 h-5 w-5" />
                 {t("starGithub")}
