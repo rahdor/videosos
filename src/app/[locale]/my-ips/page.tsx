@@ -24,11 +24,11 @@ import { useCallback, useEffect, useState } from "react";
 const queryClient = new QueryClient();
 const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
 
-// Origin marketplace URL - configurable for testnet/mainnet
+// Origin marketplace URL - configurable for testnet/mainnet (defaults to testnet)
 const ORIGIN_MARKETPLACE_URL =
-  process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin.campnetwork.xyz";
+  process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin-ui-dev.vercel.app";
 
-// Subgraph URL for querying user's IPs - configurable for testnet/mainnet
+// Subgraph URL for querying user's IPs - configurable for testnet/mainnet (defaults to testnet)
 const SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_ORIGIN_SUBGRAPH_URL ||
   "https://api.goldsky.com/api/public/project_clu8sr03ji34301z2b4xte1g5/subgraphs/camp-origin-testnet-upgradable/4.0.0/gn";
