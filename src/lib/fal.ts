@@ -402,7 +402,7 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
   {
     provider: "fal",
     endpointId: "fal-ai/ideogram/v3",
-    label: "Ideogram V3 (Text)",
+    label: "Ideogram V3",
     description:
       "Advanced text-to-image model with superior text rendering capabilities",
     cost: "$0.08/image",
