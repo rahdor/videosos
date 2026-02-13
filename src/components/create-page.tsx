@@ -306,7 +306,15 @@ function CreatePageInner() {
       setGenerating(false);
     }
     // biome-ignore lint/correctness/useExhaustiveDependencies: selectedEndpoint is derived from endpointId
-  }, [prompt, endpointId, aspectRatio, duration, isVideoEndpoint, selectedEndpoint, toast]);
+  }, [
+    prompt,
+    endpointId,
+    aspectRatio,
+    duration,
+    isVideoEndpoint,
+    selectedEndpoint,
+    toast,
+  ]);
 
   const handleUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
