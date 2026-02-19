@@ -217,6 +217,7 @@ function CreatePageInner() {
 
   // Mint Form State
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("Created with Origin Studio");
   const [price, setPrice] = useState("0.001");
   const [durationDays, setDurationDays] = useState(7);
   const [royaltyPercent, setRoyaltyPercent] = useState(10);
@@ -520,7 +521,7 @@ function CreatePageInner() {
         content.blob,
         {
           name: name.trim(),
-          description: prompt || "Created with Campfire",
+          description: description.trim() || "Created with Origin Studio",
         },
         license,
         undefined,
@@ -549,10 +550,10 @@ function CreatePageInner() {
     authenticated,
     content,
     name,
+    description,
     price,
     durationDays,
     royaltyPercent,
-    prompt,
     openModal,
     toast,
   ]);
@@ -1037,6 +1038,16 @@ function CreatePageInner() {
                   placeholder="Name your creation"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mint-description">Description</Label>
+                <Input
+                  id="mint-description"
+                  placeholder="Describe your creation"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
 

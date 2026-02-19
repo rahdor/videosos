@@ -12,6 +12,10 @@ import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
+// Origin environment - "DEVELOPMENT" for testnet, "PRODUCTION" for mainnet
+const ORIGIN_ENVIRONMENT = (process.env.NEXT_PUBLIC_ORIGIN_ENVIRONMENT ||
+  "DEVELOPMENT") as "DEVELOPMENT" | "PRODUCTION";
+
 type OriginProviderProps = {
   children: React.ReactNode;
   clientId: string;
@@ -53,7 +57,7 @@ export function OriginProvider({ children, clientId }: OriginProviderProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CampProvider clientId={clientId} appId={clientId}>
+      <CampProvider clientId={clientId} appId={clientId} environment={ORIGIN_ENVIRONMENT}>
         <AuthSync />
         {children}
       </CampProvider>
