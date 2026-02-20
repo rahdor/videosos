@@ -425,10 +425,24 @@ function CreatePageInner() {
       });
     } catch (error) {
       console.error("Generation error:", error);
+
+      // Parse fal.ai error structure
+      let errorMessage = "Please try again";
+      if (error && typeof error === "object") {
+        const err = error as { detail?: Array<{ msg?: string; type?: string }> };
+        if (err.detail?.[0]?.msg) {
+          errorMessage = err.detail[0].msg;
+          if (err.detail[0].type === "content_policy_violation") {
+            errorMessage = `Content policy violation: ${err.detail[0].msg}`;
+          }
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+      }
+
       toast({
         title: "Generation failed",
-        description:
-          error instanceof Error ? error.message : "Please try again",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

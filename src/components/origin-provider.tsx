@@ -57,7 +57,11 @@ export function OriginProvider({ children, clientId }: OriginProviderProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CampProvider clientId={clientId} appId={clientId} environment={ORIGIN_ENVIRONMENT}>
+      <CampProvider
+        clientId={clientId}
+        appId={clientId}
+        environment={ORIGIN_ENVIRONMENT}
+      >
         <AuthSync />
         {children}
       </CampProvider>
