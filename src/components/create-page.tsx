@@ -339,6 +339,9 @@ function CreatePageInner() {
         }
       } else {
         // For video models
+        // Always set aspect_ratio - some models (like Sora) use this instead of width/height
+        input.aspect_ratio = aspectRatio;
+
         if (selectedEndpoint?.availableDimensions) {
           const dims =
             selectedEndpoint.availableDimensions.find((d) => {
@@ -400,9 +403,8 @@ function CreatePageInner() {
       const response = await fetch(contentUrl);
       let blob = await response.blob();
       // Use endpoint type as primary signal since fal.ai may return wrong Content-Type
-      const type: ContentType = isVideoEndpoint || blob.type.startsWith("video/")
-        ? "video"
-        : "image";
+      const type: ContentType =
+        isVideoEndpoint || blob.type.startsWith("video/") ? "video" : "image";
 
       // Ensure blob has correct MIME type (fal.ai sometimes returns wrong/empty Content-Type)
       if (type === "video" && !blob.type.startsWith("video/")) {
