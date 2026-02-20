@@ -398,10 +398,18 @@ function CreatePageInner() {
 
       // Fetch the content
       const response = await fetch(contentUrl);
-      const blob = await response.blob();
-      const type: ContentType = blob.type.startsWith("video/")
+      let blob = await response.blob();
+      // Use endpoint type as primary signal since fal.ai may return wrong Content-Type
+      const type: ContentType = isVideoEndpoint || blob.type.startsWith("video/")
         ? "video"
         : "image";
+
+      // Ensure blob has correct MIME type (fal.ai sometimes returns wrong/empty Content-Type)
+      if (type === "video" && !blob.type.startsWith("video/")) {
+        blob = new Blob([blob], { type: "video/mp4" });
+      } else if (type === "image" && !blob.type.startsWith("image/")) {
+        blob = new Blob([blob], { type: "image/png" });
+      }
 
       // Generate thumbnail for videos
       let thumbnailBlob: Blob | null = null;
@@ -429,7 +437,9 @@ function CreatePageInner() {
       // Parse fal.ai error structure
       let errorMessage = "Please try again";
       if (error && typeof error === "object") {
-        const err = error as { detail?: Array<{ msg?: string; type?: string }> };
+        const err = error as {
+          detail?: Array<{ msg?: string; type?: string }>;
+        };
         if (err.detail?.[0]?.msg) {
           errorMessage = err.detail[0].msg;
           if (err.detail[0].type === "content_policy_violation") {
