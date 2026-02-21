@@ -208,9 +208,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     cost: "$0.05/image",
     popularity: 5,
     category: "image",
-    initialInput: {
-      prompt: "",
-    },
     availableDimensions: [
       {
         width: 1344,
@@ -254,7 +251,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "image",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_urls: [],
     },
     inputMap: {

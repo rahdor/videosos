@@ -299,9 +299,10 @@ function CreatePageInner() {
 
     try {
       // Build input based on endpoint configuration
+      // Spread initialInput first so user's prompt isn't overwritten
       const input: Record<string, unknown> = {
-        prompt: prompt.trim(),
         ...(selectedEndpoint?.initialInput || {}),
+        prompt: prompt.trim(),
       };
 
       // Upload reference image if needed
@@ -599,7 +600,6 @@ function CreatePageInner() {
             Generate or upload content, then mint it as intellectual property
           </p>
         </div>
-
 
         {/* Generation Mode Tabs */}
         <div className="space-y-3">
