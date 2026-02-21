@@ -114,15 +114,13 @@ function CreatePageInner() {
 
   // Key dialog state
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
-  const [hasFalKey, setHasFalKey] = useState(false);
   const [hasRunwareKey, setHasRunwareKey] = useState(false);
 
   // Check for API keys on mount and when dialog closes
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally re-check when dialog closes
   useEffect(() => {
-    const falKey = localStorage.getItem("falKey");
+    // FAL uses server-side proxy, no key needed from user
     const runwareKey = localStorage.getItem("runwareKey");
-    setHasFalKey(!!falKey);
     setHasRunwareKey(!!runwareKey);
   }, [keyDialogOpen]);
 
@@ -142,15 +140,15 @@ function CreatePageInner() {
     null,
   );
 
-  // Filter endpoints by mode AND available API keys
+  // Filter endpoints by available API keys
+  // FAL models always available (uses server-side proxy)
   const availableEndpoints = useMemo(() => {
     return ALL_ENDPOINTS.filter((e) => {
-      // Filter by provider - only show models for providers with API keys
-      if (e.provider === "fal" && !hasFalKey) return false;
+      // Runware requires user's own API key
       if (e.provider === "runware" && !hasRunwareKey) return false;
       return true;
     });
-  }, [hasFalKey, hasRunwareKey]);
+  }, [hasRunwareKey]);
 
   // Group image endpoints by input type
   const imageEndpoints = useMemo(() => {
@@ -602,40 +600,6 @@ function CreatePageInner() {
           </p>
         </div>
 
-        {/* API Key Warning */}
-        {!hasFalKey && !hasRunwareKey && (
-          <div className="rounded-lg border-2 border-orange-500/50 bg-orange-500/10 p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5 shrink-0" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-orange-200">
-                  API Key Required
-                </h3>
-                <p className="text-sm text-orange-200/80 mt-1">
-                  You need a FAL API key to generate images and videos. One key
-                  unlocks <strong>all models</strong> (Sora, Veo, Kling, FLUX,
-                  etc). Get one at{" "}
-                  <a
-                    href="https://fal.ai"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-orange-100"
-                  >
-                    fal.ai
-                  </a>
-                </p>
-                <Button
-                  size="sm"
-                  className="mt-3"
-                  onClick={() => setKeyDialogOpen(true)}
-                >
-                  <KeyIcon className="h-4 w-4 mr-2" />
-                  Add API Key
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Generation Mode Tabs */}
         <div className="space-y-3">
@@ -692,11 +656,7 @@ function CreatePageInner() {
               <Command>
                 <CommandInput placeholder="Search models..." />
                 <CommandList className="max-h-[400px]">
-                  <CommandEmpty>
-                    {!hasFalKey && !hasRunwareKey
-                      ? "Add an API key to see available models"
-                      : "No models found."}
-                  </CommandEmpty>
+                  <CommandEmpty>No models found.</CommandEmpty>
 
                   {generationMode === "image" ? (
                     <>

@@ -9,11 +9,10 @@ import {
   getPricingInfo,
 } from "./pricing";
 
+// Use the server-side proxy which has the FAL_KEY configured
+// This keeps the API key secure and users don't need their own key
 export const fal = createFalClient({
-  credentials: () =>
-    typeof window !== "undefined"
-      ? (localStorage?.getItem("falKey") as string)
-      : "",
+  proxyUrl: "/api/fal/proxy",
 });
 
 export type InputAsset =
