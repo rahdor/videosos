@@ -26,8 +26,7 @@ const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
 
 // Origin marketplace URL - configurable for testnet/mainnet (defaults to testnet)
 // Ensure URL has protocol (handle case where env var is missing https://)
-const rawOriginUrl =
-  process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin-ui-dev.vercel.app";
+const rawOriginUrl = process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin-ui-dev.vercel.app";
 const ORIGIN_MARKETPLACE_URL = rawOriginUrl.startsWith("http")
   ? rawOriginUrl
   : `https://${rawOriginUrl}`;
@@ -92,13 +91,13 @@ function IpCard({ ip, locale }: { ip: IpNFT; locale: string }) {
 
   return (
     <div className="group rounded-lg border bg-card overflow-hidden hover:border-primary/50 transition-colors">
-      {/* Image - low-res preview (heavily blurred for preview protection) */}
+      {/* Image */}
       <div className="aspect-square bg-muted relative overflow-hidden">
         {ip.image && !imageError ? (
           <img
             src={ip.image}
             alt={ip.name || "IP Asset"}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 blur-lg saturate-50"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             onError={() => setImageError(true)}
           />
         ) : (
