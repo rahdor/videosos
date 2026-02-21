@@ -25,8 +25,11 @@ const queryClient = new QueryClient();
 const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
 
 // Origin marketplace URL - configurable for testnet/mainnet (defaults to testnet)
-const ORIGIN_MARKETPLACE_URL =
-  process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin-ui-dev.vercel.app";
+// Ensure URL has protocol (handle case where env var is missing https://)
+const rawOriginUrl = process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin-ui-dev.vercel.app";
+const ORIGIN_MARKETPLACE_URL = rawOriginUrl.startsWith("http")
+  ? rawOriginUrl
+  : `https://${rawOriginUrl}`;
 
 // Subgraph URL for querying user's IPs - configurable for testnet/mainnet (defaults to testnet)
 const SUBGRAPH_URL =
