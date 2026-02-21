@@ -155,7 +155,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "image",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_url: "",
     },
     availableDimensions: [
@@ -266,7 +265,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     popularity: 4,
     category: "image",
     initialInput: {
-      prompt: "",
       defaultWidth: 2048,
       defaultHeight: 2048,
     },
@@ -283,7 +281,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "image",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_urls: [],
       defaultWidth: 2048,
       defaultHeight: 2048,
@@ -302,9 +299,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     cost: "$0.02/image",
     popularity: 3,
     category: "image",
-    initialInput: {
-      prompt: "",
-    },
     minGuidanceScale: 1,
     maxGuidanceScale: 10,
     defaultGuidanceScale: 2.5,
@@ -321,7 +315,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "image",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_url: "",
     },
   },
@@ -333,9 +326,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     cost: "$0.04/image",
     popularity: 3,
     category: "image",
-    initialInput: {
-      prompt: "",
-    },
   },
   {
     provider: "fal",
@@ -347,7 +337,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "image",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_urls: [],
     },
     inputMap: {
@@ -364,7 +353,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "image",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_url: "",
     },
     minSteps: 10,
@@ -592,9 +580,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     cost: "$0.05/image",
     popularity: 4,
     category: "image",
-    initialInput: {
-      prompt: "",
-    },
     availableDimensions: [
       {
         width: 1024,
@@ -692,7 +677,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "image",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_urls: [],
     },
     inputMap: {
@@ -774,9 +758,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     cost: "$0.15/video",
     popularity: 5,
     category: "video",
-    initialInput: {
-      prompt: "",
-    },
     availableDurations: [4, 6, 8],
     defaultDuration: 8,
     availableDimensions: [
@@ -808,9 +789,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     cost: "$0.10/video",
     popularity: 5,
     category: "video",
-    initialInput: {
-      prompt: "",
-    },
     availableDurations: [4, 6, 8],
     defaultDuration: 8,
     availableDimensions: [
@@ -844,7 +822,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "video",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_url: "",
     },
     availableDurations: [8],
@@ -878,7 +855,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "video",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_url: "",
     },
     availableDurations: [8],
@@ -1090,7 +1066,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "video",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_url: "",
     },
     availableDurations: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -1190,7 +1165,6 @@ export const AVAILABLE_ENDPOINTS: ApiInfo[] = [
     category: "video",
     inputAsset: ["image"],
     initialInput: {
-      prompt: "",
       image_url: "",
     },
     availableDurations: [5, 10],
