@@ -863,7 +863,7 @@ export default function RightPanel({
   const updateApiKeys = useCallback(() => {
     if (typeof window === "undefined") return;
     setApiKeys({
-      fal: Boolean(localStorage.getItem("falKey")),
+      fal: true, // FAL uses server-side proxy, no key needed
       runware: Boolean(localStorage.getItem("runwareKey")),
     });
   }, []);

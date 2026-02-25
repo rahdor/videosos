@@ -70,9 +70,8 @@ export default function Header({
   };
 
   useEffect(() => {
-    // Check localStorage only on client side after hydration
-    const hasKey = localStorage?.getItem("falKey");
-    setShowKeyWarning(!hasKey);
+    // Both keys are optional - FAL uses server-side proxy, Runware unlocks extra models
+    setShowKeyWarning(false);
   }, []);
 
   return (
