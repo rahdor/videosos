@@ -20,7 +20,7 @@ export default function Hero() {
               href="https://github.com/timoncool/videosos"
               className="text-gray-400 hover:text-white transition-colors"
             >
-              Built on VideoSOS
+              Built on Origin Studio
             </a>
             <span className="mx-2 h-4 w-px bg-white/20" />
             <Sparkles className="w-4 h-4 mr-2 text-purple-400" />

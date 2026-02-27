@@ -30,7 +30,7 @@ export default function Footer() {
                   className="hover:text-white transition-colors"
                   target="_blank"
                 >
-                  VideoSOS
+                  Origin Studio
                 </Link>
               </li>
               <li>
