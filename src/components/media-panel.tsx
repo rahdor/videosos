@@ -668,7 +668,7 @@ export function MediaItemRow({
               {data.kind === "origin" ? (
                 <Badge
                   variant="outline"
-                  className="text-xs ml-1 border-purple-500 text-purple-400"
+                  className="text-xs ml-1 border-camp-orange text-camp-orange"
                 >
                   Origin
                 </Badge>

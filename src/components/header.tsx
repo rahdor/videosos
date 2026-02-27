@@ -142,7 +142,7 @@ export default function Header({
             variant="default"
             size="sm"
             onClick={handleWalletClick}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500"
+            className="bg-camp-orange hover:bg-camp-orange-light"
           >
             <WalletIcon className="w-4 h-4 mr-2" />
             Connect to Origin

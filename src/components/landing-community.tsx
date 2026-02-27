@@ -12,9 +12,9 @@ export default function Community() {
     <section id="community" className="py-20 border-t border-white/10">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-camp-orange/20 border border-camp-orange/30 mb-6">
             <svg
-              className="w-8 h-8 text-purple-400"
+              className="w-8 h-8 text-camp-orange"
               viewBox="0 0 24 24"
               fill="currentColor"
               role="img"
@@ -32,7 +32,7 @@ export default function Community() {
             <Link href="https://www.campnetwork.xyz/">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500"
+                className="bg-camp-orange hover:bg-camp-orange-light"
               >
                 {t("learnMore")}
                 <ExternalLink className="ml-2 h-4 w-4" />

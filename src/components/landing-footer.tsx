@@ -13,7 +13,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 max-w-screen-lg md:grid-cols-4 gap-8 mx-auto">
           <div className="flex flex-col items-start col-span-2 md:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-camp-orange flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <span className="font-semibold">{t("appName")}</span>

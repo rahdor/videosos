@@ -1958,7 +1958,7 @@ export default function RightPanel({
                   <Button
                     variant="secondary"
                     disabled={enhance.isPending}
-                    className="bg-purple-400/10 text-purple-400 text-xs rounded-full h-6 px-3"
+                    className="bg-camp-orange/10 text-camp-orange text-xs rounded-full h-6 px-3"
                     onClick={() => enhance.mutate()}
                   >
                     {enhance.isPending ? (

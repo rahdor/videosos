@@ -319,8 +319,8 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
 
           {/* Parent IPs notice */}
           {parentTokenIds.length > 0 && (
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-              <p className="text-sm text-blue-400">
+            <div className="bg-camp-orange/10 border border-camp-orange/30 rounded-lg p-3">
+              <p className="text-sm text-camp-orange">
                 This derivative references {parentTokenIds.length} parent IP(s).
                 Royalties will be automatically attributed to the original
                 creators.

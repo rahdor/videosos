@@ -15,7 +15,7 @@ export default function Header() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex flex-1">
           <Link href={`/${locale}`} className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-camp-orange flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <span className="font-semibold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
@@ -48,7 +48,7 @@ export default function Header() {
         <div className="flex flex-1 justify-end items-center space-x-4">
           <LanguageSwitcher />
           <Button
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white"
+            className="bg-camp-orange hover:bg-camp-orange-light text-white"
             asChild
           >
             <Link href={`/${locale}/create`}>{t("tryNow")}</Link>

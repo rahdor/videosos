@@ -11,6 +11,11 @@ const config: Config = withUt({
   theme: {
     extend: {
       colors: {
+        camp: {
+          orange: "#ff6d01",
+          "orange-light": "#ff8533",
+          "orange-dark": "#cc5700",
+        },
         background: {
           DEFAULT: "hsl(var(--background))",
           dark: "hsl(var(--background-dark))",

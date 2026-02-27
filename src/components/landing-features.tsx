@@ -82,13 +82,13 @@ export default function Features() {
               key={feature.id}
               className={`p-6 rounded-lg border transition-colors ${
                 feature.highlight
-                  ? "border-purple-500/30 bg-gradient-to-b from-purple-500/10 to-transparent hover:border-purple-500/50"
+                  ? "border-camp-orange/30 bg-gradient-to-b from-camp-orange/10 to-transparent hover:border-camp-orange/50"
                   : "border-white/10 bg-gradient-to-b from-white/5 to-transparent hover:border-white/20"
               }`}
             >
               <feature.icon
                 className={`w-10 h-10 mb-4 ${
-                  feature.highlight ? "text-purple-400" : "text-white/80"
+                  feature.highlight ? "text-camp-orange" : "text-white/80"
                 }`}
               />
               <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
