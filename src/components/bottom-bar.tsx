@@ -16,6 +16,7 @@ import {
 import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { MousePointerClick } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   type ChangeEvent,
@@ -77,6 +78,11 @@ export default function BottomBar() {
 
   const { data: composition } = useVideoComposition(projectId);
   const frames = composition?.frames ?? {};
+
+  // Check if timeline has any content
+  const hasTimelineContent = useMemo(() => {
+    return Object.values(frames).some((trackFrames) => trackFrames.length > 0);
+  }, [frames]);
 
   const handleOnDragOver: DragEventHandler<HTMLDivElement> = (event) => {
     event.preventDefault();
@@ -500,6 +506,20 @@ export default function BottomBar() {
                         style={{ width: `${timelineWidthPx}px` }}
                       />
                     ),
+                  )}
+                  {/* Empty state hint */}
+                  {!hasTimelineContent && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground bg-background/80 backdrop-blur-sm px-6 py-4 rounded-lg border border-dashed border-muted-foreground/30">
+                        <MousePointerClick className="w-8 h-8 text-camp-orange" />
+                        <p className="text-sm font-medium">
+                          {t("dragContentHint")}
+                        </p>
+                        <p className="text-xs text-muted-foreground/70">
+                          {t("dragContentHintSub")}
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>

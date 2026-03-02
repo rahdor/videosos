@@ -32,9 +32,7 @@ export default function Hero() {
               {t("title")}
             </span>
             <br />
-            <span className="text-camp-orange">
-              {t("subtitle")}
-            </span>
+            <span className="text-camp-orange">{t("subtitle")}</span>
           </h1>
 
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto mb-12">

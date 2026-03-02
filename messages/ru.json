@@ -114,7 +114,9 @@
     "bottomBar": {
       "video": "Видео",
       "music": "Музыка",
-      "voiceover": "Озвучка"
+      "voiceover": "Озвучка",
+      "dragContentHint": "Перетащите контент сюда для редактирования",
+      "dragContentHintSub": "Перетащите изображения, видео или аудио из панели выше"
     },
     "projectDialog": {
       "title": "Новый проект",

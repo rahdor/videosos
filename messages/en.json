@@ -133,7 +133,9 @@
     "bottomBar": {
       "video": "Video",
       "music": "Music",
-      "voiceover": "Voiceover"
+      "voiceover": "Voiceover",
+      "dragContentHint": "Drag content here to start editing",
+      "dragContentHintSub": "Drop images, videos, or audio from the panel above"
     },
     "projectDialog": {
       "title": "New Project",
