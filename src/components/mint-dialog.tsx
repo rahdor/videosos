@@ -16,7 +16,12 @@ import {
 } from "@/lib/origin";
 import { useModal } from "@campnetwork/origin/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AlertCircleIcon, CoinsIcon, SettingsIcon, ShieldCheckIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  CoinsIcon,
+  SettingsIcon,
+  ShieldCheckIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import {
@@ -223,10 +228,9 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
                   IPFS credentials required for minting
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  Configure your IPFS pinning service (Pinata, Infura, or web3.storage)
-                  in Settings{" "}
-                  <SettingsIcon className="w-3 h-3 inline" />{" "}
-                  to enable minting.
+                  Configure your IPFS pinning service (Pinata, Infura, or
+                  web3.storage) in Settings{" "}
+                  <SettingsIcon className="w-3 h-3 inline" /> to enable minting.
                 </span>
               </div>
             </div>

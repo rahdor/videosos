@@ -19,7 +19,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { TrashIcon } from "lucide-react";
+import { TrashIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
 import {
   type HTMLAttributes,
   type MouseEventHandler,
@@ -203,6 +203,30 @@ export function VideoTrackView({
   });
   const handleOnDelete = () => {
     deleteKeyframe.mutate();
+  };
+
+  // Volume control for audio tracks (music, voiceover, and video with audio)
+  const volume = frame.volume ?? 100;
+  const isMuted = volume === 0;
+  const isAudioTrack =
+    track.type === "music" || track.type === "voiceover" || track.type === "video";
+
+  const updateVolume = useMutation({
+    mutationFn: (newVolume: number) =>
+      db.keyFrames.update(frame.id, { volume: newVolume }),
+    onSuccess: () => refreshVideoCache(queryClient, track.projectId),
+  });
+
+  const handleVolumeToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newVolume = isMuted ? 100 : 0;
+    updateVolume.mutate(newVolume);
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    const newVolume = Number(e.target.value);
+    updateVolume.mutate(newVolume);
   };
 
   const isSelected = useVideoProjectStore((state) =>
@@ -523,7 +547,37 @@ export function VideoTrackView({
                 {media.input?.prompt || label}
               </span>
             </div>
-            <div className="flex flex-row shrink-0 flex-1 items-center justify-end">
+            <div className="flex flex-row shrink-0 flex-1 items-center justify-end gap-1">
+              {/* Volume control for audio tracks */}
+              {isAudioTrack && (
+                <div className="flex items-center gap-1 group/volume">
+                  <WithTooltip tooltip={isMuted ? "Unmute" : "Mute"}>
+                    <button
+                      type="button"
+                      className="p-1 rounded hover:bg-black/5 group-hover:text-white"
+                      onPointerDownCapture={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={handleVolumeToggle}
+                    >
+                      {isMuted ? (
+                        <VolumeXIcon className="w-3 h-3 text-white/60" />
+                      ) : (
+                        <Volume2Icon className="w-3 h-3 text-white" />
+                      )}
+                    </button>
+                  </WithTooltip>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-12 h-1 opacity-0 group-hover/volume:opacity-100 transition-opacity cursor-pointer accent-white"
+                    title={`Volume: ${volume}%`}
+                  />
+                </div>
+              )}
               <WithTooltip tooltip="Remove content">
                 <button
                   type="button"

@@ -46,6 +46,7 @@ export type VideoKeyFrame = {
   duration: number;
   trackId: string;
   data: KeyFrameData;
+  volume?: number; // Audio volume: 0-100, default 100
 };
 
 export type KeyFrameData = {
