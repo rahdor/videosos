@@ -14,6 +14,8 @@ import {
   type VideoTrack,
 } from "@/data/schema";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
+import { useToast } from "@/hooks/use-toast";
+import { fal } from "@/lib/fal";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MousePointerClick } from "lucide-react";
@@ -35,6 +37,7 @@ import { VideoTrackRow } from "./video/track";
 
 export default function BottomBar() {
   const t = useTranslations("app.bottomBar");
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const projectId = useProjectId();
   const { data: project = PROJECT_PLACEHOLDER } = useProject(projectId);
@@ -205,11 +208,85 @@ export default function BottomBar() {
     };
   }, [tracks, projectId, t]);
 
+  // Handle file uploads dropped directly onto timeline
+  const handleFileUpload = async (files: FileList) => {
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    const validFiles = Array.from(files).filter((file) => {
+      const type = file.type.split("/")[0];
+      return (
+        (type === "image" || type === "video" || type === "audio") &&
+        file.size <= MAX_FILE_SIZE
+      );
+    });
+
+    if (validFiles.length === 0) {
+      toast({
+        title: "Invalid files",
+        description:
+          "Please drop image, video, or audio files (max 50MB each).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Uploading files...",
+      description: `Processing ${validFiles.length} file(s)`,
+    });
+
+    for (const file of validFiles) {
+      try {
+        const mediaType = file.type.split("/")[0];
+        const outputType =
+          mediaType === "audio" ? "music" : (mediaType as "image" | "video");
+
+        // Upload to FAL storage
+        const falUrl = await fal.storage.upload(file);
+
+        // Create media item
+        const mediaData: Omit<MediaItem, "id"> = {
+          projectId,
+          kind: "uploaded",
+          createdAt: Date.now(),
+          mediaType: outputType,
+          status: "completed",
+          url: falUrl,
+          blob: file,
+          input: {
+            prompt: file.name,
+          },
+        };
+
+        const newId = await db.media.create(mediaData);
+        const newMedia = await db.media.find(newId.toString());
+
+        if (newMedia) {
+          // Add to timeline
+          addToTrack.mutate(newMedia);
+        }
+      } catch (error) {
+        console.error("Failed to upload file:", error);
+        toast({
+          title: "Upload failed",
+          description: `Failed to upload ${file.name}`,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const handleOnDrop: DragEventHandler<HTMLDivElement> = (event) => {
     event.preventDefault();
     event.stopPropagation();
     setDragOverTracks(false);
 
+    // Check for files dropped from file system
+    if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      handleFileUpload(event.dataTransfer.files);
+      return true;
+    }
+
+    // Handle media items from gallery
     let jobPayload = event.dataTransfer.getData("job");
     if (!jobPayload) {
       jobPayload = event.dataTransfer.getData("application/json");

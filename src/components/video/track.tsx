@@ -209,7 +209,9 @@ export function VideoTrackView({
   const volume = frame.volume ?? 100;
   const isMuted = volume === 0;
   const isAudioTrack =
-    track.type === "music" || track.type === "voiceover" || track.type === "video";
+    track.type === "music" ||
+    track.type === "voiceover" ||
+    track.type === "video";
 
   const updateVolume = useMutation({
     mutationFn: (newVolume: number) =>
