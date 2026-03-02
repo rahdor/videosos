@@ -22,7 +22,6 @@ import {
   CheckCircle2,
   ChevronDown,
   ImageIcon,
-  InfoIcon,
   KeyIcon,
   Loader2,
   SparklesIcon,
@@ -56,12 +55,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Slider } from "./ui/slider";
 import { Textarea } from "./ui/textarea";
 import { Toaster } from "./ui/toaster";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
 
 const ALL_ENDPOINTS = [...AVAILABLE_ENDPOINTS, ...RUNWARE_ENDPOINTS];
 const queryClient = new QueryClient();
@@ -665,30 +658,28 @@ function CreatePageInner() {
                           {imageEndpoints.textToImage.map((endpoint) => (
                             <CommandItem
                               key={endpoint.endpointId}
-                              value={`${endpoint.label} text to image`}
+                              value={`${endpoint.label} ${endpoint.description || ""} text to image`}
                               onSelect={() => {
                                 setEndpointId(endpoint.endpointId);
                                 setModelPickerOpen(false);
                                 setReferenceImage(null);
                               }}
+                              className="flex flex-col items-start py-2"
                             >
-                              <TypeIcon className="mr-2 h-4 w-4 text-green-400" />
-                              <span className="flex-1">{endpoint.label}</span>
+                              <div className="flex items-center w-full">
+                                <TypeIcon className="mr-2 h-4 w-4 text-green-400 shrink-0" />
+                                <span className="flex-1 font-medium">
+                                  {endpoint.label}
+                                </span>
+                                <span className="ml-2 text-xs text-muted-foreground shrink-0">
+                                  {endpoint.cost || ""}
+                                </span>
+                              </div>
                               {endpoint.description && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      {endpoint.description}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                <span className="text-xs text-muted-foreground ml-6 mt-0.5 line-clamp-1">
+                                  {endpoint.description}
+                                </span>
                               )}
-                              <span className="ml-2 text-xs text-muted-foreground">
-                                {endpoint.cost || ""}
-                              </span>
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -698,29 +689,27 @@ function CreatePageInner() {
                           {imageEndpoints.imageToImage.map((endpoint) => (
                             <CommandItem
                               key={endpoint.endpointId}
-                              value={`${endpoint.label} image to image`}
+                              value={`${endpoint.label} ${endpoint.description || ""} image to image`}
                               onSelect={() => {
                                 setEndpointId(endpoint.endpointId);
                                 setModelPickerOpen(false);
                               }}
+                              className="flex flex-col items-start py-2"
                             >
-                              <ImageIcon className="mr-2 h-4 w-4 text-blue-400" />
-                              <span className="flex-1">{endpoint.label}</span>
+                              <div className="flex items-center w-full">
+                                <ImageIcon className="mr-2 h-4 w-4 text-blue-400 shrink-0" />
+                                <span className="flex-1 font-medium">
+                                  {endpoint.label}
+                                </span>
+                                <span className="ml-2 text-xs text-muted-foreground shrink-0">
+                                  {endpoint.cost || ""}
+                                </span>
+                              </div>
                               {endpoint.description && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      {endpoint.description}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                <span className="text-xs text-muted-foreground ml-6 mt-0.5 line-clamp-1">
+                                  {endpoint.description}
+                                </span>
                               )}
-                              <span className="ml-2 text-xs text-muted-foreground">
-                                {endpoint.cost || ""}
-                              </span>
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -733,30 +722,28 @@ function CreatePageInner() {
                           {videoEndpoints.textToVideo.map((endpoint) => (
                             <CommandItem
                               key={endpoint.endpointId}
-                              value={`${endpoint.label} text to video`}
+                              value={`${endpoint.label} ${endpoint.description || ""} text to video`}
                               onSelect={() => {
                                 setEndpointId(endpoint.endpointId);
                                 setModelPickerOpen(false);
                                 setReferenceImage(null);
                               }}
+                              className="flex flex-col items-start py-2"
                             >
-                              <TypeIcon className="mr-2 h-4 w-4 text-green-400" />
-                              <span className="flex-1">{endpoint.label}</span>
+                              <div className="flex items-center w-full">
+                                <TypeIcon className="mr-2 h-4 w-4 text-green-400 shrink-0" />
+                                <span className="flex-1 font-medium">
+                                  {endpoint.label}
+                                </span>
+                                <span className="ml-2 text-xs text-muted-foreground shrink-0">
+                                  {endpoint.cost || ""}
+                                </span>
+                              </div>
                               {endpoint.description && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      {endpoint.description}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                <span className="text-xs text-muted-foreground ml-6 mt-0.5 line-clamp-1">
+                                  {endpoint.description}
+                                </span>
                               )}
-                              <span className="ml-2 text-xs text-muted-foreground">
-                                {endpoint.cost || ""}
-                              </span>
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -766,29 +753,27 @@ function CreatePageInner() {
                           {videoEndpoints.imageToVideo.map((endpoint) => (
                             <CommandItem
                               key={endpoint.endpointId}
-                              value={`${endpoint.label} image to video`}
+                              value={`${endpoint.label} ${endpoint.description || ""} image to video`}
                               onSelect={() => {
                                 setEndpointId(endpoint.endpointId);
                                 setModelPickerOpen(false);
                               }}
+                              className="flex flex-col items-start py-2"
                             >
-                              <ImageIcon className="mr-2 h-4 w-4 text-blue-400" />
-                              <span className="flex-1">{endpoint.label}</span>
+                              <div className="flex items-center w-full">
+                                <ImageIcon className="mr-2 h-4 w-4 text-blue-400 shrink-0" />
+                                <span className="flex-1 font-medium">
+                                  {endpoint.label}
+                                </span>
+                                <span className="ml-2 text-xs text-muted-foreground shrink-0">
+                                  {endpoint.cost || ""}
+                                </span>
+                              </div>
                               {endpoint.description && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground ml-1" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      {endpoint.description}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                <span className="text-xs text-muted-foreground ml-6 mt-0.5 line-clamp-1">
+                                  {endpoint.description}
+                                </span>
                               )}
-                              <span className="ml-2 text-xs text-muted-foreground">
-                                {endpoint.cost || ""}
-                              </span>
                             </CommandItem>
                           ))}
                         </CommandGroup>
