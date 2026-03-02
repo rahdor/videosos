@@ -16,7 +16,7 @@ import {
 } from "@/lib/origin";
 import { useModal } from "@campnetwork/origin/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AlertCircleIcon, CoinsIcon, ShieldCheckIcon } from "lucide-react";
+import { AlertCircleIcon, CoinsIcon, SettingsIcon, ShieldCheckIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import {
@@ -42,6 +42,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
   const mintDialogData = useVideoProjectStore((s) => s.mintDialogData);
   const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
   const walletAddress = useVideoProjectStore((s) => s.walletAddress);
+  const hasIpfsCredentials = useVideoProjectStore((s) => s.hasIpfsCredentials);
   const { openModal } = useModal();
 
   const { data: mediaItems = [] } = useProjectMediaItems(projectId);
@@ -180,6 +181,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
   const canMint =
     name.trim() &&
     walletAddress &&
+    hasIpfsCredentials &&
     (mintDialogData?.exportedBlob || mintDialogData?.mediaId);
 
   return (
@@ -210,6 +212,23 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
                 </button>{" "}
                 to mint.
               </span>
+            </div>
+          )}
+
+          {walletAddress && !hasIpfsCredentials && (
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 flex items-start gap-2">
+              <AlertCircleIcon className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-medium">
+                  IPFS credentials required for minting
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  Configure your IPFS pinning service (Pinata, Infura, or web3.storage)
+                  in Settings{" "}
+                  <SettingsIcon className="w-3 h-3 inline" />{" "}
+                  to enable minting.
+                </span>
+              </div>
             </div>
           )}
 
