@@ -3,26 +3,20 @@
 import {
   queryKeys,
   useProjectMediaItems,
-  useVideoComposition,
 } from "@/data/queries";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { useToast } from "@/hooks/use-toast";
-import {
-  DEFAULT_LICENSE_TERMS,
-  type SimpleLicenseTerms,
-  ethToWei,
-  mintOriginFile,
-  percentToBps,
-} from "@/lib/origin";
-import { useModal } from "@campnetwork/origin/react";
+import { useKorWallet, useKorParentTracking } from "@/hooks/use-kor";
+import { getKorSDK, uploadToIPFS, getIpfsCredentials } from "@/lib/kor";
+import { KOR_CONTRACTS } from "@/lib/contracts";
+import { useWalletClient } from "wagmi";
+import { ethers } from "ethers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  AlertCircleIcon,
   CoinsIcon,
   SettingsIcon,
-  ShieldCheckIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -35,7 +29,6 @@ import {
 import { LoadingIcon } from "./ui/icons";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Slider } from "./ui/slider";
 import { Textarea } from "./ui/textarea";
 
 type MintDialogProps = {} & Parameters<typeof Dialog>[0];
@@ -46,109 +39,87 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
   const { toast } = useToast();
   const mintDialogData = useVideoProjectStore((s) => s.mintDialogData);
   const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
-  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
   const hasIpfsCredentials = useVideoProjectStore((s) => s.hasIpfsCredentials);
-  const { openModal } = useModal();
+  const { walletAddress, openConnectModal } = useKorWallet();
+  const { data: walletClient } = useWalletClient();
 
   const { data: mediaItems = [] } = useProjectMediaItems(projectId);
-  const { data: composition } = useVideoComposition(projectId);
 
   // Form state
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [priceEth, setPriceEth] = useState("0.001"); // Minimum 0.001 CAMP
-  const [durationDays, setDurationDays] = useState(7); // 1-30 days
-  const [royaltyPercent, setRoyaltyPercent] = useState(10);
-  const [commercialUse, setCommercialUse] = useState(true);
-  const [derivativesAllowed, setDerivativesAllowed] = useState(true);
 
-  // Collect parent Origin token IDs from media items used in timeline
-  const parentTokenIds = useMemo(() => {
-    if (!composition || !mintDialogData?.exportedBlob) {
-      // If minting a single media item, check if it has Origin parents
-      if (mintDialogData?.mediaId) {
-        const media = mediaItems.find((m) => m.id === mintDialogData.mediaId);
-        if (media?.kind === "origin" && media.originTokenId) {
-          return [media.originTokenId];
-        }
-      }
-      return [];
-    }
-
-    // For exported videos, scan all media items used in keyframes
-    const usedMediaIds = new Set<string>();
-    for (const frame of Object.values(composition.frames).flat()) {
-      if (frame.data.mediaId) {
-        usedMediaIds.add(frame.data.mediaId);
-      }
-    }
-
-    const parentIds: string[] = [];
-    for (const mediaId of Array.from(usedMediaIds)) {
-      const media = composition.mediaItems[mediaId];
-      if (media?.kind === "origin" && media.originTokenId) {
-        parentIds.push(media.originTokenId);
-      }
-    }
-
-    return parentIds.slice(0, 8); // Max 8 parents
-  }, [composition, mintDialogData, mediaItems]);
+  // Get parent token IDs from Kor hook
+  const { parentTokenIds } = useKorParentTracking();
 
   const mintMutation = useMutation({
     mutationFn: async () => {
-      if (!walletAddress) {
+      if (!walletAddress || !walletClient) {
         throw new Error("Wallet not connected");
       }
 
-      let fileToMint: Blob;
-      let thumbnailToUse: Blob | null = mintDialogData?.thumbnailBlob ?? null;
+      const credentials = getIpfsCredentials();
+      if (!credentials) {
+        throw new Error("IPFS credentials not configured");
+      }
 
+      // Get file to mint
+      let fileToMint: Blob;
       if (mintDialogData?.exportedBlob) {
         fileToMint = mintDialogData.exportedBlob;
       } else if (mintDialogData?.mediaId) {
         const media = mediaItems.find((m) => m.id === mintDialogData.mediaId);
-        if (!media?.blob) {
-          throw new Error("Media blob not available");
-        }
+        if (!media?.blob) throw new Error("Media blob not available");
         fileToMint = media.blob;
-        // Use media's thumbnail if not already provided
-        if (!thumbnailToUse && media.thumbnailBlob) {
-          thumbnailToUse = media.thumbnailBlob;
-        }
       } else {
         throw new Error("No file to mint");
       }
 
-      const license: SimpleLicenseTerms = {
-        price: ethToWei(Number.parseFloat(priceEth) || 0.001),
-        duration: durationDays * 86400, // Convert days to seconds (1 day = 86400s)
-        royaltyBps: percentToBps(royaltyPercent),
-        paymentToken: "0x0000000000000000000000000000000000000000",
-      };
-
-      const tokenId = await mintOriginFile(
+      // 1. Upload to IPFS
+      const metadataUri = await uploadToIPFS(
         fileToMint,
-        {
-          name,
-          description,
-          attributes: {
-            commercialUse: commercialUse.toString(),
-            derivativesAllowed: derivativesAllowed.toString(),
-          },
-        },
-        license,
-        parentTokenIds.length > 0 ? parentTokenIds : undefined,
-        {
-          previewImage: thumbnailToUse,
-        },
+        { name, description },
+        credentials
       );
 
-      return tokenId;
+      // 2. Mint NFT from protocol collection
+      const kor = getKorSDK();
+      const mintSig = await kor.mintFromProtocolCollection({
+        recipientAddress: walletAddress,
+        metadataURI: metadataUri,
+      });
+
+      // Create ethers signer from wallet client
+      const provider = new ethers.BrowserProvider(walletClient as any);
+      const signer = await provider.getSigner();
+
+      const { tokenId } = await kor.submitMintFromCollection(mintSig, signer);
+
+      // 3. Register as IP (or derivative if has parents)
+      let ipId: string;
+      if (parentTokenIds.length > 0) {
+        const derivSig = await kor.registerDerivative({
+          tokenContract: KOR_CONTRACTS.protocolCollection,
+          tokenId: parseInt(tokenId),
+          parentIP: parentTokenIds[0],
+        });
+        const result = await kor.submitRegisterIP(derivSig, signer);
+        ipId = result.ipId;
+      } else {
+        const regSig = await kor.registerIP({
+          tokenContract: KOR_CONTRACTS.protocolCollection,
+          tokenId: parseInt(tokenId),
+        });
+        const result = await kor.submitRegisterIP(regSig, signer);
+        ipId = result.ipId;
+      }
+
+      return { tokenId, ipId };
     },
-    onSuccess: (tokenId) => {
+    onSuccess: ({ tokenId, ipId }) => {
       toast({
         title: "IP NFT Minted",
-        description: `Your content has been registered on Origin Protocol. Token ID: ${tokenId}`,
+        description: `Token ID: ${tokenId}, IP ID: ${ipId}`,
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectMediaItems(projectId),
@@ -169,11 +140,6 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
     // Reset form
     setName("");
     setDescription("");
-    setPriceEth("0.001");
-    setDurationDays(7);
-    setRoyaltyPercent(10);
-    setCommercialUse(true);
-    setDerivativesAllowed(true);
   };
 
   const handleOnOpenChange = (isOpen: boolean) => {
@@ -198,20 +164,19 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
             Mint as IP NFT
           </DialogTitle>
           <DialogDescription>
-            Register this content on Origin Protocol with IP rights.
+            Register this content on Kor Protocol with IP rights.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
           {!walletAddress && (
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 flex items-center gap-2">
-              <AlertCircleIcon className="w-4 h-4 text-yellow-500 flex-shrink-0" />
               <span className="text-sm">
                 Please{" "}
                 <button
                   type="button"
                   className="underline hover:text-yellow-400"
-                  onClick={() => openModal()}
+                  onClick={() => openConnectModal()}
                 >
                   connect your wallet
                 </button>{" "}
@@ -222,7 +187,6 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
 
           {walletAddress && !hasIpfsCredentials && (
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 flex items-start gap-2">
-              <AlertCircleIcon className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
               <div className="flex flex-col gap-1">
                 <span className="text-sm font-medium">
                   IPFS credentials required for minting
@@ -260,90 +224,10 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
             />
           </div>
 
-          {/* License Terms */}
-          <div className="border rounded-lg p-4 space-y-4">
-            <h4 className="font-medium flex items-center gap-2">
-              <ShieldCheckIcon className="w-4 h-4" />
-              License Terms
-            </h4>
-
-            <div className="space-y-2">
-              <Label htmlFor="mint-price">Price (CAMP)</Label>
-              <Input
-                id="mint-price"
-                type="number"
-                step="0.001"
-                min="0.001"
-                value={priceEth}
-                onChange={(e) => setPriceEth(e.target.value)}
-                disabled={mintMutation.isPending}
-              />
-              <p className="text-xs text-muted-foreground">
-                Minimum 0.001 CAMP
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>
-                License Duration: {durationDays} day
-                {durationDays !== 1 ? "s" : ""}
-              </Label>
-              <Slider
-                value={[durationDays]}
-                onValueChange={([val]) => setDurationDays(val)}
-                min={1}
-                max={30}
-                step={1}
-                disabled={mintMutation.isPending}
-              />
-              <p className="text-xs text-muted-foreground">
-                How long buyers have access (1-30 days)
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Royalty: {royaltyPercent}%</Label>
-              <Slider
-                value={[royaltyPercent]}
-                onValueChange={([val]) => setRoyaltyPercent(val)}
-                min={1}
-                max={50}
-                step={1}
-                disabled={mintMutation.isPending}
-              />
-              <p className="text-xs text-muted-foreground">
-                Percentage you receive from secondary sales (min 1%)
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={commercialUse}
-                  onChange={(e) => setCommercialUse(e.target.checked)}
-                  disabled={mintMutation.isPending}
-                  className="rounded"
-                />
-                <span className="text-sm">Allow Commercial Use</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={derivativesAllowed}
-                  onChange={(e) => setDerivativesAllowed(e.target.checked)}
-                  disabled={mintMutation.isPending}
-                  className="rounded"
-                />
-                <span className="text-sm">Allow Derivatives</span>
-              </label>
-            </div>
-          </div>
-
           {/* Parent IPs notice */}
           {parentTokenIds.length > 0 && (
-            <div className="bg-camp-orange/10 border border-camp-orange/30 rounded-lg p-3">
-              <p className="text-sm text-camp-orange">
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <p className="text-sm text-blue-400">
                 This derivative references {parentTokenIds.length} parent IP(s).
                 Royalties will be automatically attributed to the original
                 creators.
