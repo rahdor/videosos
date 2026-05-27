@@ -79,11 +79,19 @@ export type KeyFrameData = {
     }
 );
 
-import type { OriginMetadata } from "@/lib/origin";
+// Kor metadata stored with imported/minted media items
+export type KorMetadata = {
+  name: string;
+  description: string;
+  image?: string;
+  animation_url?: string;
+  owner: string;
+  parentIpIds?: string[];
+};
 
 export type MediaItem = {
   id: string;
-  kind: "generated" | "uploaded" | "origin";
+  kind: "generated" | "uploaded" | "kor";
   provider?: "fal" | "runware";
   endpointId?: string;
   requestId?: string;
@@ -98,9 +106,10 @@ export type MediaItem = {
   blob?: Blob;
   thumbnailBlob?: Blob;
   metadata?: Record<string, any>;
-  // Origin-specific fields (present when kind is "origin" or after minting)
-  originTokenId?: string;
-  originMetadata?: OriginMetadata;
+  // Kor-specific fields (present when kind is "kor" or after minting)
+  korTokenId?: string;
+  korIpId?: string;
+  korMetadata?: KorMetadata;
 } & (
   | {
       kind: "generated";
@@ -117,10 +126,10 @@ export type MediaItem = {
       blob?: Blob;
     }
   | {
-      kind: "origin";
-      originTokenId: string;
+      kind: "kor";
+      korTokenId: string;
       url: string;
       blob?: Blob;
-      originMetadata: OriginMetadata;
+      korMetadata: KorMetadata;
     }
 );
