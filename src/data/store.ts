@@ -44,12 +44,11 @@ interface VideoProjectProps {
   generateData: GenerateData;
   exportDialogOpen: boolean;
   endpointId: string;
-  // Origin/Wallet state
-  walletAddress: string | null;
+  // Kor/Wallet state
   walletDialogOpen: boolean;
   mintDialogOpen: boolean;
   mintDialogData: MintDialogData | null;
-  importOriginDialogOpen: boolean;
+  importKorDialogOpen: boolean;
   hasIpfsCredentials: boolean;
 }
 
@@ -70,11 +69,10 @@ interface VideoProjectState extends VideoProjectProps {
   setExportDialogOpen: (open: boolean) => void;
   setEndpointId: (endpointId: string) => void;
   onGenerate: () => void;
-  // Origin/Wallet actions
-  setWalletAddress: (address: string | null) => void;
+  // Kor/Wallet actions
   setWalletDialogOpen: (open: boolean) => void;
   setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob; thumbnailBlob?: Blob }) => void;
-  setImportOriginDialogOpen: (open: boolean) => void;
+  setImportKorDialogOpen: (open: boolean) => void;
   setHasIpfsCredentials: (has: boolean) => void;
 }
 
@@ -99,12 +97,11 @@ const DEFAULT_PROPS: VideoProjectProps = {
     audio_url: null,
   },
   exportDialogOpen: false,
-  // Origin/Wallet defaults
-  walletAddress: null,
+  // Kor/Wallet defaults
   walletDialogOpen: false,
   mintDialogOpen: false,
   mintDialogData: null,
-  importOriginDialogOpen: false,
+  importKorDialogOpen: false,
   hasIpfsCredentials: false,
 };
 
@@ -170,8 +167,7 @@ export const createVideoProjectStore = (
     },
     setExportDialogOpen: (exportDialogOpen: boolean) =>
       set({ exportDialogOpen }),
-    // Origin/Wallet actions
-    setWalletAddress: (walletAddress: string | null) => set({ walletAddress }),
+    // Kor/Wallet actions
     setWalletDialogOpen: (walletDialogOpen: boolean) => set({ walletDialogOpen }),
     setMintDialogOpen: (open: boolean, data?: { mediaId?: string; exportedBlob?: Blob; thumbnailBlob?: Blob }) =>
       set({
@@ -180,8 +176,8 @@ export const createVideoProjectStore = (
           ? { mediaId: data?.mediaId ?? null, exportedBlob: data?.exportedBlob ?? null, thumbnailBlob: data?.thumbnailBlob ?? null }
           : null,
       }),
-    setImportOriginDialogOpen: (importOriginDialogOpen: boolean) =>
-      set({ importOriginDialogOpen }),
+    setImportKorDialogOpen: (importKorDialogOpen: boolean) =>
+      set({ importKorDialogOpen }),
     setHasIpfsCredentials: (hasIpfsCredentials: boolean) =>
       set({ hasIpfsCredentials }),
   }));
