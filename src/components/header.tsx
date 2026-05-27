@@ -1,9 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useVideoProjectStore } from "@/data/store";
 import { cn } from "@/lib/utils";
-import { useAuth, useAuthState, useModal } from "@campnetwork/origin/react";
+import { useKorWallet } from "@/hooks/use-kor";
 import {
   CheckCircle2,
   LogOutIcon,
@@ -52,21 +51,15 @@ export default function Header({
   const locale = useLocale();
   const pathname = usePathname();
   const [showKeyWarning, setShowKeyWarning] = useState(false);
-  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
-
-  // Origin hooks
-  const { openModal } = useModal();
-  const auth = useAuth();
-  const { authenticated } = useAuthState();
+  // Kor wallet hooks
+  const { walletAddress, isConnected, openConnectModal, disconnect } = useKorWallet();
 
   const handleWalletClick = () => {
-    openModal();
+    openConnectModal();
   };
 
   const handleDisconnect = () => {
-    if (auth) {
-      auth.disconnect();
-    }
+    disconnect();
   };
 
   useEffect(() => {
@@ -117,7 +110,7 @@ export default function Header({
           </a>
         </Button>
         <LanguageSwitcher />
-        {authenticated ? (
+        {isConnected ? (
           <div className="flex items-center gap-1">
             <Button
               variant="outline"

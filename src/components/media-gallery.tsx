@@ -11,7 +11,7 @@ import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { AVAILABLE_ENDPOINTS } from "@/lib/fal";
 import { RUNWARE_ENDPOINTS } from "@/lib/runware-models";
 import { cn, resolveMediaUrl } from "@/lib/utils";
-import { useModal } from "@campnetwork/kor/react";
+import { useKorWallet } from "@/hooks/use-kor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDuration } from "date-fns";
 import {
@@ -140,9 +140,8 @@ export function MediaGallerySheet({
     (s) => s.setGenerateMediaType,
   );
   const onGenerate = useVideoProjectStore((s) => s.onGenerate);
-  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
   const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
-  const { openModal } = useModal();
+  const { walletAddress, openConnectModal } = useKorWallet();
 
   const handleUpscaleDialog = () => {
     setGenerateMediaType("video");
@@ -188,7 +187,7 @@ export function MediaGallerySheet({
 
   const handleMintAsIP = () => {
     if (!walletAddress) {
-      openModal();
+      openConnectModal();
       return;
     }
     setMintDialogOpen(true, {

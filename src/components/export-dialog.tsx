@@ -9,7 +9,7 @@ import { PROJECT_PLACEHOLDER } from "@/data/schema";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { exportVideoClientSide, extractVideoThumbnail } from "@/lib/ffmpeg";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
-import { useModal } from "@campnetwork/kor/react";
+import { useKorWallet } from "@/hooks/use-kor";
 import { useMutation } from "@tanstack/react-query";
 import { CoinsIcon, DownloadIcon, FilmIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -137,9 +137,8 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
   const setExportDialogOpen = useVideoProjectStore(
     (s) => s.setExportDialogOpen,
   );
-  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
   const setMintDialogOpen = useVideoProjectStore((s) => s.setMintDialogOpen);
-  const { openModal } = useModal();
+  const { walletAddress, openConnectModal } = useKorWallet();
 
   const handleOnOpenChange = (open: boolean) => {
     setExportDialogOpen(open);
@@ -148,7 +147,7 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
 
   const handleMintAsIP = () => {
     if (!walletAddress) {
-      openModal();
+      openConnectModal();
       return;
     }
     if (exportVideo.data?.blob) {
