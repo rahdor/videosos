@@ -11,7 +11,7 @@ import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { AVAILABLE_ENDPOINTS } from "@/lib/fal";
 import { RUNWARE_ENDPOINTS } from "@/lib/runware-models";
 import { cn, resolveMediaUrl } from "@/lib/utils";
-import { useModal } from "@campnetwork/origin/react";
+import { useModal } from "@campnetwork/kor/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDuration } from "date-fns";
 import {

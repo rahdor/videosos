@@ -9,7 +9,7 @@ import { PROJECT_PLACEHOLDER } from "@/data/schema";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
 import { exportVideoClientSide, extractVideoThumbnail } from "@/lib/ffmpeg";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
-import { useModal } from "@campnetwork/origin/react";
+import { useModal } from "@campnetwork/kor/react";
 import { useMutation } from "@tanstack/react-query";
 import { CoinsIcon, DownloadIcon, FilmIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -227,7 +227,7 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
             onClick={handleMintAsIP}
             title={
               walletAddress
-                ? "Mint as IP NFT on Origin Protocol"
+                ? "Mint as IP NFT on Kor"
                 : "Connect wallet to mint"
             }
           >

@@ -71,8 +71,8 @@ export default function LeftPanel() {
     (s) => s.setProjectDialogOpen,
   );
   const openGenerateDialog = useVideoProjectStore((s) => s.openGenerateDialog);
-  const setImportOriginDialogOpen = useVideoProjectStore(
-    (s) => s.setImportOriginDialogOpen,
+  const setImportKorDialogOpen = useVideoProjectStore(
+    (s) => s.setImportKorDialogOpen,
   );
   const [timelineDurationInput, setTimelineDurationInput] = useState(
     () =>
@@ -379,8 +379,8 @@ export default function LeftPanel() {
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => setImportOriginDialogOpen(true)}
-              title="Import from Origin Protocol"
+              onClick={() => setImportKorDialogOpen(true)}
+              title="Import from Kor"
             >
               <DownloadCloudIcon className="w-4 h-4 opacity-50" />
             </Button>

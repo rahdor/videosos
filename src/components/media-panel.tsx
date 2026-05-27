@@ -665,12 +665,12 @@ export function MediaItemRow({
                   <code className="text-muted-foreground">#{mediaId}</code>
                 </>
               )}
-              {data.kind === "origin" ? (
+              {data.kind === "kor" ? (
                 <Badge
                   variant="outline"
                   className="text-xs ml-1 border-camp-orange text-camp-orange"
                 >
-                  Origin
+                  Kor
                 </Badge>
               ) : data.kind === "uploaded" ? (
                 <Badge variant="outline" className="text-xs ml-1">
