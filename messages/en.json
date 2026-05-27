@@ -85,8 +85,8 @@
   },
   "app": {
     "metadata": {
-      "title": "Origin Studio | AI Video Editor",
-      "description": "Open-source AI video editor that runs entirely in your browser."
+      "title": "VRSNS - AI Video Editor",
+      "description": "Create professional videos with AI. Open-source video editor with 100+ AI models."
     },
     "header": {
       "github": "GitHub"

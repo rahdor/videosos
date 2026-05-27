@@ -1,4 +1,4 @@
-# VideoSOS - Open-Source AI Video Editor with 100+ Models
+# VRSNS - Open-Source AI Video Editor with 100+ Models
 
 [![GitHub stars](https://img.shields.io/github/stars/timoncool/videosos?style=social)](https://github.com/timoncool/videosos/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/timoncool/videosos?style=social)](https://github.com/timoncool/videosos/network/members)
@@ -14,10 +14,10 @@ Create professional videos with AI in your browser. Free, open-source video edit
 ## Screenshots
 
 ### Video Editor — Main Interface
-![VideoSOS Video Editor - Main Interface](./public/screenshot-app.png)
+![VRSNS Video Editor - Main Interface](./public/screenshot-app.png)
 
 ### Video Editor — Project Statistics
-![VideoSOS Video Editor - Project Statistics](./public/screenshot-stats.png)
+![VRSNS Video Editor - Project Statistics](./public/screenshot-stats.png)
 
 ---
 
@@ -25,7 +25,7 @@ Create professional videos with AI in your browser. Free, open-source video edit
 
 ### 🤖 100+ AI Models
 
-VideoSOS integrates with **fal.ai** and **Runware.ai** to bring you cutting-edge AI generation capabilities:
+VRSNS integrates with **fal.ai** and **Runware.ai** to bring you cutting-edge AI generation capabilities:
 
 - **🎬 Video Generation**: Text-to-video and image-to-video with state-of-the-art models including Google Veo 3.1, Kling 2.5, and Hailuo-02
 - **🎨 Image Generation**: Text-to-image with cutting-edge models including Gemini 2.5 Flash, Imagen 4.0, FLUX.1 Pro, and Ideogram V3
@@ -57,7 +57,7 @@ Full internationalization support (English/Russian) with keyboard shortcuts for 
 
 ## Supported AI Models
 
-VideoSOS features 100+ AI models across video generation, image generation, and image editing. All models are available through dual provider support for maximum reliability.
+VRSNS features 100+ AI models across video generation, image generation, and image editing. All models are available through dual provider support for maximum reliability.
 
 ### Complete Model List by Category
 
@@ -106,7 +106,7 @@ VideoSOS features 100+ AI models across video generation, image generation, and 
 
 ### AI Providers
 
-VideoSOS supports multiple AI providers simultaneously:
+VRSNS supports multiple AI providers simultaneously:
 
 - **[fal.ai](https://fal.ai)** - Comprehensive AI model infrastructure with 50+ models for image, video, and audio generation
 - **[Runware.ai](https://runware.ai)** - High-performance AI inference platform with 100+ models including FLUX, Google Imagen, Ideogram, Kling, and more
@@ -124,7 +124,7 @@ Both API keys are stored locally in your browser and never sent to our servers.
 
 ### Updating Model Information
 
-VideoSOS includes automated scripts to keep model information up-to-date with provider APIs. Here's how to update models:
+VRSNS includes automated scripts to keep model information up-to-date with provider APIs. Here's how to update models:
 
 #### FAL Models
 
@@ -236,7 +236,7 @@ docker compose down
 
 ## Contributing
 
-We welcome contributions from developers of all skill levels! Whether you're fixing bugs, adding features, improving documentation, or sharing ideas, your help makes VideoSOS better for everyone.
+We welcome contributions from developers of all skill levels! Whether you're fixing bugs, adding features, improving documentation, or sharing ideas, your help makes VRSNS better for everyone.
 
 **How to contribute:**
 1. ⭐ Star this repository to show your support
