@@ -1,12 +1,11 @@
 "use client";
 
 import Header from "@/components/header";
-import { OriginProvider, useAuthState } from "@/components/origin-provider";
+import { KorProvider } from "@/components/kor-provider";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
-import { useVideoProjectStore } from "@/data/store";
-import { weiToEth } from "@/lib/origin";
-import { CampModal, useModal } from "@campnetwork/origin/react";
+import { useKorWallet } from "@/hooks/use-kor";
+import { ethers } from "ethers";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   CoinsIcon,
@@ -22,9 +21,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
-const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
 
-// Origin marketplace URL - configurable for testnet/mainnet (defaults to testnet)
+// Kor/Origin marketplace URL - configurable for testnet/mainnet (defaults to testnet)
 // Ensure URL has protocol (handle case where env var is missing https://)
 const rawOriginUrl =
   process.env.NEXT_PUBLIC_ORIGIN_URL || "https://origin-ui-dev.vercel.app";
@@ -81,7 +79,7 @@ async function fetchUserIPs(walletAddress: string): Promise<IpNFT[]> {
 
 function formatPrice(priceWei: string): string {
   try {
-    return `${weiToEth(BigInt(priceWei))} CAMP`;
+    return `${ethers.formatEther(priceWei)} CAMP`;
   } catch {
     return "Free";
   }
@@ -132,9 +130,7 @@ function IpCard({ ip, locale }: { ip: IpNFT; locale: string }) {
 
 function MyIPsPageInner() {
   const locale = useLocale();
-  const { authenticated } = useAuthState();
-  const { openModal } = useModal();
-  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
+  const { isConnected, openConnectModal, walletAddress } = useKorWallet();
 
   const [ips, setIps] = useState<IpNFT[]>([]);
   const [loading, setLoading] = useState(false);
@@ -159,12 +155,12 @@ function MyIPsPageInner() {
 
   // Load IPs when wallet connects
   useEffect(() => {
-    if (authenticated && walletAddress) {
+    if (isConnected && walletAddress) {
       loadIPs();
     } else {
       setIps([]);
     }
-  }, [authenticated, walletAddress, loadIPs]);
+  }, [isConnected, walletAddress, loadIPs]);
 
   // Truncate wallet address for display
   const truncatedAddress = walletAddress
@@ -180,7 +176,7 @@ function MyIPsPageInner() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold">My IPs</h1>
-              {authenticated && truncatedAddress && (
+              {isConnected && truncatedAddress && (
                 <p className="text-sm text-muted-foreground mt-1">
                   Connected as{" "}
                   <span className="font-mono">{truncatedAddress}</span>
@@ -188,7 +184,7 @@ function MyIPsPageInner() {
               )}
             </div>
             <div className="flex gap-2">
-              {authenticated && (
+              {isConnected && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -211,7 +207,7 @@ function MyIPsPageInner() {
           </div>
 
           {/* Content */}
-          {!authenticated ? (
+          {!isConnected ? (
             // Not connected state
             <div className="flex flex-col items-center justify-center py-20">
               <WalletIcon className="h-16 w-16 text-muted-foreground/30 mb-4" />
@@ -222,7 +218,7 @@ function MyIPsPageInner() {
                 Connect your wallet to view your minted intellectual property
                 assets.
               </p>
-              <Button onClick={() => openModal()}>
+              <Button onClick={() => openConnectModal()}>
                 <WalletIcon className="h-4 w-4 mr-2" />
                 Connect Wallet
               </Button>
@@ -274,11 +270,10 @@ function MyIPsPageInner() {
 export default function MyIPsPage() {
   return (
     <QueryClientProvider client={queryClient}>
-      <OriginProvider clientId={ORIGIN_CLIENT_ID}>
+      <KorProvider>
         <MyIPsPageInner />
-        <CampModal injectButton={false} />
         <Toaster />
-      </OriginProvider>
+      </KorProvider>
     </QueryClientProvider>
   );
 }

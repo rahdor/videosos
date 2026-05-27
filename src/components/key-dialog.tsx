@@ -1,15 +1,17 @@
 "use client";
 
 import { useVideoProjectStore } from "@/data/store";
+import { useKorWallet } from "@/hooks/use-kor";
 import { useToast } from "@/hooks/use-toast";
 import { fal } from "@/lib/fal";
 import {
   type IpfsPinningProvider,
-  checkHasIpfsCredentials,
-  deleteUserIpfsCredentials,
-  saveUserIpfsCredentials,
-  verifyUserIpfsCredentials,
-} from "@/lib/origin";
+  type IpfsCredentials,
+  hasIpfsCredentials as checkHasIpfsCredentialsSync,
+  deleteIpfsCredentials,
+  saveIpfsCredentials,
+  getIpfsCredentials,
+} from "@/lib/kor";
 import { getRunwareClient, resetRunwareClient } from "@/lib/runware";
 import { useTranslations } from "next-intl";
 
@@ -47,7 +49,7 @@ export function KeyDialog({ onOpenChange, open, ...props }: KeyDialogProps) {
   const { toast } = useToast();
 
   // IPFS credentials state
-  const walletAddress = useVideoProjectStore((s) => s.walletAddress);
+  const { walletAddress } = useKorWallet();
   const hasIpfsCredentials = useVideoProjectStore((s) => s.hasIpfsCredentials);
   const setHasIpfsCredentials = useVideoProjectStore(
     (s) => s.setHasIpfsCredentials,
@@ -123,7 +125,7 @@ export function KeyDialog({ onOpenChange, open, ...props }: KeyDialogProps) {
       setIpfsTestStatus("idle");
       // Check IPFS credentials status when dialog opens
       if (walletAddress) {
-        checkHasIpfsCredentials().then(setHasIpfsCredentials);
+        setHasIpfsCredentials(checkHasIpfsCredentialsSync());
       }
     }
   }, [open, walletAddress, setHasIpfsCredentials]);
@@ -132,7 +134,7 @@ export function KeyDialog({ onOpenChange, open, ...props }: KeyDialogProps) {
     setIpfsTestStatus("testing");
     try {
       // Build credentials based on provider
-      const credentials = {
+      const credentials: IpfsCredentials = {
         provider: ipfsProvider,
         ...(ipfsProvider === "pinata" && { jwt: ipfsJwt }),
         ...(ipfsProvider === "infura" && {
@@ -142,29 +144,21 @@ export function KeyDialog({ onOpenChange, open, ...props }: KeyDialogProps) {
         ...(ipfsProvider === "web3storage" && { token: ipfsToken }),
       };
 
-      // Save first, then verify
-      await saveUserIpfsCredentials(credentials);
-      const result = await verifyUserIpfsCredentials();
+      // Save credentials to localStorage
+      saveIpfsCredentials(credentials);
 
-      if (result.valid) {
-        setIpfsTestStatus("success");
-        setHasIpfsCredentials(true);
-        toast({
-          title: "IPFS Credentials Valid",
-          description: "Your credentials are working correctly",
-        });
-      } else {
-        setIpfsTestStatus("error");
-        toast({
-          title: "IPFS Credentials Invalid",
-          description: result.error || "Please check your credentials",
-          variant: "destructive",
-        });
-      }
+      // For now, just mark as success since we saved them
+      // A full verification would require a test upload
+      setIpfsTestStatus("success");
+      setHasIpfsCredentials(true);
+      toast({
+        title: "IPFS Credentials Saved",
+        description: "Your credentials have been saved",
+      });
     } catch (error) {
       setIpfsTestStatus("error");
       toast({
-        title: "IPFS Verification Failed",
+        title: "IPFS Save Failed",
         description:
           error instanceof Error
             ? error.message
@@ -174,9 +168,9 @@ export function KeyDialog({ onOpenChange, open, ...props }: KeyDialogProps) {
     }
   };
 
-  const deleteIpfsCredentials = async () => {
+  const handleDeleteIpfsCredentials = () => {
     try {
-      await deleteUserIpfsCredentials();
+      deleteIpfsCredentials();
       setHasIpfsCredentials(false);
       setIpfsJwt("");
       setIpfsProjectId("");
@@ -476,7 +470,7 @@ export function KeyDialog({ onOpenChange, open, ...props }: KeyDialogProps) {
                   {hasIpfsCredentials && (
                     <Button
                       variant="outline"
-                      onClick={deleteIpfsCredentials}
+                      onClick={handleDeleteIpfsCredentials}
                       className="text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />

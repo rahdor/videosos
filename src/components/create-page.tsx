@@ -8,21 +8,12 @@ import {
   fal,
 } from "@/lib/fal";
 import { extractVideoThumbnail } from "@/lib/ffmpeg";
-import {
-  type SimpleLicenseTerms,
-  ethToWei,
-  mintOriginFile,
-  percentToBps,
-} from "@/lib/origin";
 import { RUNWARE_ENDPOINTS } from "@/lib/runware-models";
-import { CampModal, useModal } from "@campnetwork/origin/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  AlertCircle,
   CheckCircle2,
   ChevronDown,
   ImageIcon,
-  KeyIcon,
   Loader2,
   SparklesIcon,
   TypeIcon,
@@ -34,7 +25,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import Header from "@/components/header";
 import { KeyDialog } from "@/components/key-dialog";
-import { OriginProvider, useAuthState } from "@/components/origin-provider";
+import { KorProvider } from "@/components/kor-provider";
+import { useKorWallet } from "@/hooks/use-kor";
 import { Button } from "./ui/button";
 import {
   Collapsible,
@@ -58,9 +50,6 @@ import { Toaster } from "./ui/toaster";
 
 const ALL_ENDPOINTS = [...AVAILABLE_ENDPOINTS, ...RUNWARE_ENDPOINTS];
 const queryClient = new QueryClient();
-
-// Origin client ID
-const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
 
 // Helper to determine if endpoint requires image input
 function requiresImageInput(endpoint: ApiInfo): boolean {
@@ -100,8 +89,7 @@ interface ReferenceImage {
 
 function CreatePageInner() {
   const { toast } = useToast();
-  const { authenticated } = useAuthState();
-  const { openModal } = useModal();
+  const { isConnected, openConnectModal } = useKorWallet();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const referenceImageRef = useRef<HTMLInputElement>(null);
 
@@ -502,8 +490,8 @@ function CreatePageInner() {
   );
 
   const handleMint = useCallback(async () => {
-    if (!authenticated) {
-      openModal();
+    if (!isConnected) {
+      openConnectModal();
       return;
     }
 
@@ -525,54 +513,17 @@ function CreatePageInner() {
       return;
     }
 
-    setMinting(true);
-
-    try {
-      const license: SimpleLicenseTerms = {
-        price: ethToWei(Number.parseFloat(price) || 0.001),
-        duration: durationDays * 86400,
-        royaltyBps: percentToBps(royaltyPercent),
-        paymentToken: "0x0000000000000000000000000000000000000000",
-      };
-
-      const tokenId = await mintOriginFile(
-        content.blob,
-        {
-          name: name.trim(),
-          description: description.trim() || "Created with Origin Studio",
-        },
-        license,
-        undefined,
-        {
-          previewImage: content.thumbnailBlob,
-        },
-      );
-
-      setMintSuccess(true);
-      toast({
-        title: "IP Minted!",
-        description: `Your IP has been minted. Token ID: ${tokenId}`,
-      });
-    } catch (error) {
-      console.error("Mint error:", error);
-      toast({
-        title: "Minting failed",
-        description:
-          error instanceof Error ? error.message : "Please try again",
-        variant: "destructive",
-      });
-    } finally {
-      setMinting(false);
-    }
+    // TODO: Implement minting with Kor SDK
+    // For now, show a message that this feature is coming soon
+    toast({
+      title: "Coming Soon",
+      description: "Minting from the Create page will be available soon. Please use the main editor to mint your content.",
+    });
   }, [
-    authenticated,
+    isConnected,
     content,
     name,
-    description,
-    price,
-    durationDays,
-    royaltyPercent,
-    openModal,
+    openConnectModal,
     toast,
   ]);
 
@@ -1066,7 +1017,7 @@ function CreatePageInner() {
                 {minting ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : null}
-                {authenticated ? "Mint as IP" : "Connect Wallet to Mint"}
+                {isConnected ? "Mint as IP" : "Connect Wallet to Mint"}
               </Button>
             </div>
           </div>
@@ -1096,11 +1047,10 @@ function CreatePageInner() {
 export function CreatePage() {
   return (
     <QueryClientProvider client={queryClient}>
-      <OriginProvider clientId={ORIGIN_CLIENT_ID}>
+      <KorProvider>
         <CreatePageInner />
-        <CampModal injectButton={false} />
         <Toaster />
-      </OriginProvider>
+      </KorProvider>
     </QueryClientProvider>
   );
 }
