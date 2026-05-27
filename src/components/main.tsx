@@ -8,23 +8,20 @@ import {
   VideoProjectStoreContext,
   createVideoProjectStore,
 } from "@/data/store";
-import { CampModal } from "@campnetwork/origin/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useStore } from "zustand";
 import { ExportDialog } from "./export-dialog";
-import { ImportOriginDialog } from "./import-origin-dialog";
+import { ImportKorDialog } from "./import-kor-dialog";
 import { KeyDialog } from "./key-dialog";
 import LeftPanel from "./left-panel";
 import { MediaGallerySheet } from "./media-gallery";
 import { MintDialog } from "./mint-dialog";
-import { OriginProvider } from "./origin-provider";
+import { KorProvider } from "./kor-provider";
 import { ProjectDialog } from "./project-dialog";
 import { ToastProvider } from "./ui/toast";
 import { Toaster } from "./ui/toaster";
 
-// Origin client ID - get from https://camp.network
-const ORIGIN_CLIENT_ID = process.env.NEXT_PUBLIC_ORIGIN_CLIENT_ID || "";
 
 type AppProps = {
   projectId: string;
@@ -58,19 +55,19 @@ export function App({ projectId }: AppProps) {
   // Origin dialog states
   const mintDialogOpen = useStore(projectStore, (s) => s.mintDialogOpen);
   const setMintDialogOpen = useStore(projectStore, (s) => s.setMintDialogOpen);
-  const importOriginDialogOpen = useStore(
+  const importKorDialogOpen = useStore(
     projectStore,
-    (s) => s.importOriginDialogOpen,
+    (s) => s.importKorDialogOpen,
   );
-  const setImportOriginDialogOpen = useStore(
+  const setImportKorDialogOpen = useStore(
     projectStore,
-    (s) => s.setImportOriginDialogOpen,
+    (s) => s.setImportKorDialogOpen,
   );
   return (
     <ToastProvider>
       <QueryClientProvider client={queryClient}>
         <VideoProjectStoreContext.Provider value={projectStore}>
-          <OriginProvider clientId={ORIGIN_CLIENT_ID}>
+          <KorProvider>
             <div className="flex flex-col relative overflow-x-hidden h-screen bg-background">
               <Header openKeyDialog={() => setKeyDialog(true)} />
               <main className="flex overflow-hidden h-full w-screen">
@@ -97,17 +94,15 @@ export function App({ projectId }: AppProps) {
               onOpenChange={handleOnSheetOpenChange}
               selectedMediaId={selectedMediaId ?? ""}
             />
-            {/* Origin Protocol - CampModal handles wallet connection */}
-            <CampModal injectButton={false} />
             <MintDialog
               open={mintDialogOpen}
               onOpenChange={(open) => setMintDialogOpen(open)}
             />
-            <ImportOriginDialog
-              open={importOriginDialogOpen}
-              onOpenChange={setImportOriginDialogOpen}
+            <ImportKorDialog
+              open={importKorDialogOpen}
+              onOpenChange={setImportKorDialogOpen}
             />
-          </OriginProvider>
+          </KorProvider>
         </VideoProjectStoreContext.Provider>
       </QueryClientProvider>
     </ToastProvider>
