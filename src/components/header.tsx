@@ -90,12 +90,6 @@ export default function Header({
           >
             Studio
           </TabLink>
-          <TabLink
-            href={`/${locale}/my-ips`}
-            active={pathname?.includes("/my-ips") ?? false}
-          >
-            My IPs
-          </TabLink>
         </nav>
       )}
 
