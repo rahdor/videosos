@@ -428,7 +428,7 @@ export async function exportVideoClientSide(
     onProgress(100);
   }
 
-  return new Blob([data], { type: "video/mp4" });
+  return new Blob([data as BlobPart], { type: "video/mp4" });
 }
 
 function getExtension(url: string): string {
