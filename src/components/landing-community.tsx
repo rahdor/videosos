@@ -18,7 +18,7 @@ export default function Community() {
               viewBox="0 0 24 24"
               fill="currentColor"
               role="img"
-              aria-label="Camp Network"
+              aria-label="Kor Protocol"
             >
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
@@ -29,7 +29,7 @@ export default function Community() {
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="https://www.campnetwork.xyz/">
+            <Link href="https://kor.art/">
               <Button
                 size="lg"
                 className="bg-camp-orange hover:bg-camp-orange-light"

@@ -30,7 +30,7 @@ export default function Footer() {
                   className="hover:text-white transition-colors"
                   target="_blank"
                 >
-                  Origin Studio
+                  VideoSOS
                 </Link>
               </li>
               <li>
@@ -55,20 +55,20 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col items-start">
-            <h4 className="font-semibold mb-4">{t("camp")}</h4>
+            <h4 className="font-semibold mb-4">{t("kor")}</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <Link
-                  href="https://www.campnetwork.xyz/"
+                  href="https://kor.art/"
                   className="hover:text-white transition-colors"
                   target="_blank"
                 >
-                  Camp Network
+                  Kor Protocol
                 </Link>
               </li>
               <li>
                 <Link
-                  href="https://docs.campnetwork.xyz/"
+                  href="https://docs.kor.art/"
                   className="hover:text-white transition-colors"
                   target="_blank"
                 >
@@ -77,11 +77,11 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="https://www.campnetwork.xyz/origin"
+                  href="https://base.org/"
                   className="hover:text-white transition-colors"
                   target="_blank"
                 >
-                  Origin Protocol
+                  Base Network
                 </Link>
               </li>
             </ul>
@@ -113,8 +113,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 text-center text-sm text-gray-500">
           <p>
-            Built with Origin Protocol by Camp Network. Open source under MIT
-            license.
+            Built with Kor Protocol on Base. Open source under MIT license.
           </p>
         </div>
       </div>

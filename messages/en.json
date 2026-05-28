@@ -7,21 +7,21 @@
       "tryNow": "Start Creating"
     },
     "hero": {
-      "badge": "Powered by Origin Protocol",
+      "badge": "Powered by Kor Protocol",
       "starGithub": "Star on GitHub",
       "title": "Create AI Content.",
       "subtitle": "Own It Forever.",
-      "description": "Generate stunning videos with 100+ AI models, then mint them as intellectual property on Camp Network. License your creations, earn royalties, and maintain true ownership of your AI-generated content.",
+      "description": "Generate stunning videos with 100+ AI models, then mint them as intellectual property on Base. License your creations, earn royalties, and maintain true ownership of your AI-generated content.",
       "tryNow": "Start Creating",
       "learnMore": "Learn About IP Licensing",
-      "imageAlt": "Origin Studio interface"
+      "imageAlt": "VRSNS interface"
     },
     "features": {
       "title": "From Creation to Ownership",
       "subtitle": "Generate AI content, mint as intellectual property, and earn from your creations.",
       "ipLicensing": {
         "title": "IP Licensing & Royalties",
-        "description": "Transform your AI creations into licensed intellectual property using Camp Network's Origin Protocol. Set your own licensing terms, pricing, and duration. Earn royalties when others use your content."
+        "description": "Transform your AI creations into licensed intellectual property using Kor Protocol on Base. Set your own licensing terms, pricing, and duration. Earn royalties when others use your content."
       },
       "onChainOwnership": {
         "title": "On-Chain Ownership",
@@ -69,18 +69,18 @@
       }
     },
     "community": {
-      "title": "Built on Camp Network",
-      "description": "Origin Protocol by Camp Network enables true IP ownership for digital creators. Join the ecosystem of creators who own their work.",
+      "title": "Built on Kor Protocol",
+      "description": "Kor Protocol enables true IP ownership for digital creators on Base. Join the ecosystem of creators who own their work.",
       "starGithub": "Star on GitHub",
-      "learnMore": "Learn About Camp Network"
+      "learnMore": "Learn About Kor Protocol"
     },
     "footer": {
-      "appName": "Origin Studio",
+      "appName": "VRSNS",
       "tagline": "Create AI content. Own it forever.",
       "credits": "Credits",
       "community": "Community",
       "github": "GitHub",
-      "camp": "Camp Network"
+      "kor": "Kor Protocol"
     }
   },
   "app": {

@@ -19,7 +19,7 @@ export default function Header() {
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <span className="font-semibold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              Origin Studio
+              VRSNS
             </span>
           </Link>
         </div>
