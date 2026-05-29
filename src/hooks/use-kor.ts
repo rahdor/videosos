@@ -1,8 +1,8 @@
 "use client";
 
+import { useIsWalletConfigured } from "@/components/kor-provider";
 import { useVideoComposition } from "@/data/queries";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
-import { useIsWalletConfigured } from "@/components/kor-provider";
 import { useCallback, useMemo } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 

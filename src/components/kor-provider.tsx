@@ -3,7 +3,7 @@
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useContext, useRef } from "react";
-import { WagmiProvider, createConfig, http } from "wagmi";
+import { http, WagmiProvider, createConfig } from "wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import "@rainbow-me/rainbowkit/styles.css";
 

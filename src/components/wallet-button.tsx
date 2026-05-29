@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useIsWalletConfigured } from "@/components/kor-provider";
+import { Button } from "@/components/ui/button";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { CheckCircle2, LogOutIcon, WalletIcon } from "lucide-react";
 import { useAccount, useDisconnect } from "wagmi";
@@ -19,7 +19,9 @@ export function WalletButton() {
     return null;
   }
 
-  return <WalletButtonInner isConnected={isConnected} disconnect={disconnect} />;
+  return (
+    <WalletButtonInner isConnected={isConnected} disconnect={disconnect} />
+  );
 }
 
 /**
