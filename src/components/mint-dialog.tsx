@@ -1,22 +1,16 @@
 "use client";
 
-import {
-  queryKeys,
-  useProjectMediaItems,
-} from "@/data/queries";
+import { queryKeys, useProjectMediaItems } from "@/data/queries";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
+import { useKorParentTracking, useKorWallet } from "@/hooks/use-kor";
 import { useToast } from "@/hooks/use-toast";
-import { useKorWallet, useKorParentTracking } from "@/hooks/use-kor";
-import { getKorSDK, uploadToIPFS, getIpfsCredentials } from "@/lib/kor";
 import { KOR_CONTRACTS } from "@/lib/contracts";
-import { useWalletClient } from "wagmi";
-import { ethers } from "ethers";
+import { getIpfsCredentials, getKorSDK, uploadToIPFS } from "@/lib/kor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  CoinsIcon,
-  SettingsIcon,
-} from "lucide-react";
+import { ethers } from "ethers";
+import { CoinsIcon, SettingsIcon } from "lucide-react";
 import { useState } from "react";
+import { useWalletClient } from "wagmi";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -79,7 +73,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
       const metadataUri = await uploadToIPFS(
         fileToMint,
         { name, description },
-        credentials
+        credentials,
       );
 
       // 2. Mint NFT from protocol collection
@@ -100,7 +94,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
       if (parentTokenIds.length > 0) {
         const derivSig = await kor.registerDerivative({
           tokenContract: KOR_CONTRACTS.protocolCollection,
-          tokenId: parseInt(tokenId),
+          tokenId: Number.parseInt(tokenId),
           parentIP: parentTokenIds[0],
         });
         const result = await kor.submitRegisterIP(derivSig, signer);
@@ -108,7 +102,7 @@ export function MintDialog({ onOpenChange, open, ...props }: MintDialogProps) {
       } else {
         const regSig = await kor.registerIP({
           tokenContract: KOR_CONTRACTS.protocolCollection,
-          tokenId: parseInt(tokenId),
+          tokenId: Number.parseInt(tokenId),
         });
         const result = await kor.submitRegisterIP(regSig, signer);
         ipId = result.ipId;

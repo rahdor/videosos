@@ -1,18 +1,19 @@
 "use client";
 
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
 import { useVideoProjectStore } from "@/data/store";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 type WalletDialogProps = {} & Parameters<typeof Dialog>[0];
 
-export function WalletDialog({ open, onOpenChange, ...props }: WalletDialogProps) {
-  const setWalletDialogOpen = useVideoProjectStore((s) => s.setWalletDialogOpen);
+export function WalletDialog({
+  open,
+  onOpenChange,
+  ...props
+}: WalletDialogProps) {
+  const setWalletDialogOpen = useVideoProjectStore(
+    (s) => s.setWalletDialogOpen,
+  );
 
   const handleOpenChange = (isOpen: boolean) => {
     setWalletDialogOpen(isOpen);

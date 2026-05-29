@@ -2,19 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useKorWallet } from "@/hooks/use-kor";
-import {
-  CheckCircle2,
-  LogOutIcon,
-  SettingsIcon,
-  WalletIcon,
-} from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "./language-switcher";
 import { Logo } from "./logo";
+import { WalletButton } from "./wallet-button";
 
 function TabLink({
   href,
@@ -51,16 +46,6 @@ export default function Header({
   const locale = useLocale();
   const pathname = usePathname();
   const [showKeyWarning, setShowKeyWarning] = useState(false);
-  // Kor wallet hooks
-  const { walletAddress, isConnected, openConnectModal, disconnect } = useKorWallet();
-
-  const handleWalletClick = () => {
-    openConnectModal();
-  };
-
-  const handleDisconnect = () => {
-    disconnect();
-  };
 
   useEffect(() => {
     // Both keys are optional - FAL uses server-side proxy, Runware unlocks extra models
@@ -104,37 +89,7 @@ export default function Header({
           </a>
         </Button>
         <LanguageSwitcher />
-        {isConnected ? (
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-green-600 border-green-600/30"
-              onClick={handleWalletClick}
-            >
-              <CheckCircle2 className="w-4 h-4 mr-2" />
-              Connected
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDisconnect}
-              title="Disconnect wallet"
-            >
-              <LogOutIcon className="w-5 h-5" />
-            </Button>
-          </div>
-        ) : (
-          <Button
-            variant="default"
-            size="sm"
-            onClick={handleWalletClick}
-            className="bg-camp-orange hover:bg-camp-orange-light"
-          >
-            <WalletIcon className="w-4 h-4 mr-2" />
-            Connect to Origin
-          </Button>
-        )}
+        <WalletButton />
         {openKeyDialog && (
           <Button
             variant="ghost"

@@ -517,15 +517,10 @@ function CreatePageInner() {
     // For now, show a message that this feature is coming soon
     toast({
       title: "Coming Soon",
-      description: "Minting from the Create page will be available soon. Please use the main editor to mint your content.",
+      description:
+        "Minting from the Create page will be available soon. Please use the main editor to mint your content.",
     });
-  }, [
-    isConnected,
-    content,
-    name,
-    openConnectModal,
-    toast,
-  ]);
+  }, [isConnected, content, name, openConnectModal, toast]);
 
   const handleReset = () => {
     setContent(null);

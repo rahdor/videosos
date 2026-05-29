@@ -1,18 +1,37 @@
 "use client";
 
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
-import { baseSepolia, base } from "wagmi/chains";
+import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useRef } from "react";
+import { createContext, useContext, useRef } from "react";
+import { WagmiProvider, createConfig, http } from "wagmi";
+import { base, baseSepolia } from "wagmi/chains";
 import "@rainbow-me/rainbowkit/styles.css";
 
-const config = getDefaultConfig({
-  appName: "VRSNS",
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "",
-  chains: [baseSepolia, base],
-  ssr: true,
-});
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+
+// Create config - use getDefaultConfig if projectId available, otherwise minimal config
+const config = projectId
+  ? getDefaultConfig({
+      appName: "VRSNS",
+      projectId,
+      chains: [baseSepolia, base],
+      ssr: true,
+    })
+  : createConfig({
+      chains: [baseSepolia, base],
+      transports: {
+        [baseSepolia.id]: http(),
+        [base.id]: http(),
+      },
+      ssr: true,
+    });
+
+// Context to track if wallet is configured
+const WalletConfiguredContext = createContext(!!projectId);
+
+export function useIsWalletConfigured() {
+  return useContext(WalletConfiguredContext);
+}
 
 type KorProviderProps = {
   children: React.ReactNode;
@@ -20,14 +39,20 @@ type KorProviderProps = {
 
 export function KorProvider({ children }: KorProviderProps) {
   const queryClient = useRef(new QueryClient()).current;
+  const isConfigured = !!projectId;
 
+  // Always wrap with WagmiProvider so hooks work, but only add RainbowKit if configured
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          {children}
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <WalletConfiguredContext.Provider value={isConfigured}>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          {isConfigured ? (
+            <RainbowKitProvider>{children}</RainbowKitProvider>
+          ) : (
+            children
+          )}
+        </QueryClientProvider>
+      </WagmiProvider>
+    </WalletConfiguredContext.Provider>
   );
 }

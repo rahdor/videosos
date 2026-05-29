@@ -112,9 +112,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 text-center text-sm text-gray-500">
-          <p>
-            Built with Kor Protocol on Base. Open source under MIT license.
-          </p>
+          <p>Built with Kor Protocol on Base. Open source under MIT license.</p>
         </div>
       </div>
     </footer>

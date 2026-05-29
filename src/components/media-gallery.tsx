@@ -8,10 +8,10 @@ import {
 } from "@/data/queries";
 import type { MediaItem } from "@/data/schema";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
+import { useKorWallet } from "@/hooks/use-kor";
 import { AVAILABLE_ENDPOINTS } from "@/lib/fal";
 import { RUNWARE_ENDPOINTS } from "@/lib/runware-models";
 import { cn, resolveMediaUrl } from "@/lib/utils";
-import { useKorWallet } from "@/hooks/use-kor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDuration } from "date-fns";
 import {

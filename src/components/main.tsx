@@ -14,14 +14,13 @@ import { useStore } from "zustand";
 import { ExportDialog } from "./export-dialog";
 import { ImportKorDialog } from "./import-kor-dialog";
 import { KeyDialog } from "./key-dialog";
+import { KorProvider } from "./kor-provider";
 import LeftPanel from "./left-panel";
 import { MediaGallerySheet } from "./media-gallery";
 import { MintDialog } from "./mint-dialog";
-import { KorProvider } from "./kor-provider";
 import { ProjectDialog } from "./project-dialog";
 import { ToastProvider } from "./ui/toast";
 import { Toaster } from "./ui/toaster";
-
 
 type AppProps = {
   projectId: string;

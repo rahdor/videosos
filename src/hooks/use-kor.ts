@@ -2,24 +2,31 @@
 
 import { useVideoComposition } from "@/data/queries";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
+import { useIsWalletConfigured } from "@/components/kor-provider";
 import { useCallback, useMemo } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAccount, useDisconnect } from "wagmi";
 
 /**
  * Hook for accessing wallet state via wagmi
+ * Returns safe defaults when wallet is not configured
  */
 export function useKorWallet() {
-  const { address, isConnected, chain } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const isWalletConfigured = useIsWalletConfigured();
+
+  // Wagmi hooks work because we always have WagmiProvider
+  const account = useAccount();
   const { disconnect } = useDisconnect();
 
   return {
-    walletAddress: address,
-    isConnected,
-    chainId: chain?.id,
-    openConnectModal: openConnectModal || (() => {}),
+    walletAddress: account.address,
+    isConnected: account.isConnected,
+    chainId: account.chain?.id,
+    // openConnectModal will be provided by a separate component that uses RainbowKit
+    openConnectModal: () => {
+      console.warn("Use WalletConnectButton component instead");
+    },
     disconnect,
+    isWalletConfigured,
   };
 }
 
@@ -38,7 +45,7 @@ export function useRequireWallet() {
       callback();
       return true;
     },
-    [isConnected, openConnectModal]
+    [isConnected, openConnectModal],
   );
 
   return {
@@ -102,7 +109,7 @@ export function useMintDialog() {
         setMintDialogOpen(true, data);
       });
     },
-    [requireWallet, setMintDialogOpen]
+    [requireWallet, setMintDialogOpen],
   );
 
   const closeMintDialog = useCallback(() => {
@@ -120,7 +127,7 @@ export function useMintDialog() {
  */
 export function useImportDialog() {
   const setImportKorDialogOpen = useVideoProjectStore(
-    (s) => s.setImportKorDialogOpen
+    (s) => s.setImportKorDialogOpen,
   );
 
   const openImportDialog = useCallback(() => {

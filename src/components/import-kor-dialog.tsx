@@ -4,8 +4,8 @@ import { db } from "@/data/db";
 import { queryKeys } from "@/data/queries";
 import type { MediaItem } from "@/data/schema";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
-import { useToast } from "@/hooks/use-toast";
 import { useKorWallet } from "@/hooks/use-kor";
+import { useToast } from "@/hooks/use-toast";
 import { getKorAsset, ipfsToHttp } from "@/lib/kor";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DownloadIcon } from "lucide-react";
@@ -33,7 +33,7 @@ export function ImportKorDialog({
   const { toast } = useToast();
   const { walletAddress, openConnectModal } = useKorWallet();
   const setImportKorDialogOpen = useVideoProjectStore(
-    (s) => s.setImportKorDialogOpen
+    (s) => s.setImportKorDialogOpen,
   );
 
   const [tokenIdInput, setTokenIdInput] = useState("");
@@ -52,7 +52,9 @@ export function ImportKorDialog({
       const assetData = await getKorAsset(tokenId);
 
       // Download the file as blob
-      const fileUrl = ipfsToHttp(assetData.metadata.animation_url || assetData.metadata.image || "");
+      const fileUrl = ipfsToHttp(
+        assetData.metadata.animation_url || assetData.metadata.image || "",
+      );
       const response = await fetch(fileUrl);
       if (!response.ok) {
         throw new Error("Failed to download asset");
@@ -177,7 +179,8 @@ export function ImportKorDialog({
               <div className="text-sm">
                 <span className="text-muted-foreground">Owner:</span>{" "}
                 <span className="font-mono text-xs">
-                  {assetQuery.data.owner.slice(0, 6)}...{assetQuery.data.owner.slice(-4)}
+                  {assetQuery.data.owner.slice(0, 6)}...
+                  {assetQuery.data.owner.slice(-4)}
                 </span>
               </div>
               {assetQuery.data.metadata.image && (
@@ -197,7 +200,7 @@ export function ImportKorDialog({
 
 function determineMediaType(
   url: string,
-  contentType: string
+  contentType: string,
 ): "image" | "video" | "music" | "voiceover" {
   if (contentType.startsWith("video/")) return "video";
   if (contentType.startsWith("audio/")) return "music";

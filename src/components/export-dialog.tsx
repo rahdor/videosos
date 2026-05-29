@@ -7,9 +7,9 @@ import {
 } from "@/data/queries";
 import { PROJECT_PLACEHOLDER } from "@/data/schema";
 import { useProjectId, useVideoProjectStore } from "@/data/store";
+import { useKorWallet } from "@/hooks/use-kor";
 import { exportVideoClientSide, extractVideoThumbnail } from "@/lib/ffmpeg";
 import { cn, resolveDuration, resolveMediaUrl } from "@/lib/utils";
-import { useKorWallet } from "@/hooks/use-kor";
 import { useMutation } from "@tanstack/react-query";
 import { CoinsIcon, DownloadIcon, FilmIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -225,9 +225,7 @@ export function ExportDialog({ onOpenChange, ...props }: ExportDialogProps) {
             disabled={actionsDisabled || !exportVideo.data}
             onClick={handleMintAsIP}
             title={
-              walletAddress
-                ? "Mint as IP NFT on Kor"
-                : "Connect wallet to mint"
+              walletAddress ? "Mint as IP NFT on Kor" : "Connect wallet to mint"
             }
           >
             <CoinsIcon className="w-4 h-4" />
