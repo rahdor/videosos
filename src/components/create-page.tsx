@@ -27,6 +27,10 @@ import Header from "@/components/header";
 import { KeyDialog } from "@/components/key-dialog";
 import { KorProvider } from "@/components/kor-provider";
 import { useKorWallet } from "@/hooks/use-kor";
+import { KOR_CONTRACTS } from "@/lib/contracts";
+import { getIpfsCredentials, getKorSDK, uploadToIPFS } from "@/lib/kor";
+import { ethers } from "ethers";
+import { useWalletClient } from "wagmi";
 import { Button } from "./ui/button";
 import {
   Collapsible,
@@ -89,7 +93,8 @@ interface ReferenceImage {
 
 function CreatePageInner() {
   const { toast } = useToast();
-  const { isConnected, openConnectModal } = useKorWallet();
+  const { isConnected, openConnectModal, walletAddress } = useKorWallet();
+  const { data: walletClient } = useWalletClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const referenceImageRef = useRef<HTMLInputElement>(null);
 
@@ -513,14 +518,78 @@ function CreatePageInner() {
       return;
     }
 
-    // TODO: Implement minting with Kor SDK
-    // For now, show a message that this feature is coming soon
-    toast({
-      title: "Coming Soon",
-      description:
-        "Minting from the Create page will be available soon. Please use the main editor to mint your content.",
-    });
-  }, [isConnected, content, name, openConnectModal, toast]);
+    if (!walletAddress || !walletClient) {
+      toast({
+        title: "Wallet not ready",
+        description: "Please wait for wallet to connect",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const credentials = getIpfsCredentials();
+    if (!credentials) {
+      toast({
+        title: "IPFS credentials required",
+        description: "Configure IPFS in Settings to enable minting",
+        variant: "destructive",
+      });
+      setKeyDialogOpen(true);
+      return;
+    }
+
+    setMinting(true);
+    try {
+      // Fetch the content as a blob
+      const response = await fetch(content.url);
+      const blob = await response.blob();
+
+      // 1. Upload to IPFS
+      toast({ title: "Uploading to IPFS...", description: "Please wait" });
+      const metadataUri = await uploadToIPFS(
+        blob,
+        { name, description },
+        credentials,
+      );
+
+      // 2. Mint NFT from protocol collection
+      toast({ title: "Minting NFT...", description: "Please approve the transaction" });
+      const kor = getKorSDK();
+      const mintSig = await kor.mintFromProtocolCollection({
+        recipientAddress: walletAddress,
+        metadataURI: metadataUri,
+      });
+
+      // Create ethers signer from wallet client
+      const provider = new ethers.BrowserProvider(walletClient as any);
+      const signer = await provider.getSigner();
+
+      const { tokenId } = await kor.submitMintFromCollection(mintSig, signer);
+
+      // 3. Register as IP
+      toast({ title: "Registering IP...", description: "Please approve the transaction" });
+      const regSig = await kor.registerIP({
+        tokenContract: KOR_CONTRACTS.protocolCollection,
+        tokenId: Number.parseInt(tokenId),
+      });
+      const { ipId } = await kor.submitRegisterIP(regSig, signer);
+
+      setMintSuccess(true);
+      toast({
+        title: "Successfully Minted!",
+        description: `Token ID: ${tokenId}, IP ID: ${ipId}`,
+      });
+    } catch (error) {
+      console.error("Mint error:", error);
+      toast({
+        title: "Minting failed",
+        description: error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setMinting(false);
+    }
+  }, [isConnected, content, name, description, walletAddress, walletClient, openConnectModal, toast]);
 
   const handleReset = () => {
     setContent(null);
@@ -970,7 +1039,7 @@ function CreatePageInner() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="mint-price">Price (ETH)</Label>
+                  <Label htmlFor="mint-price">Price (USDC)</Label>
                   <Input
                     id="mint-price"
                     type="number"
