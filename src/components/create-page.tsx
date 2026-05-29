@@ -196,7 +196,7 @@ function CreatePageInner() {
 
   // Mint Form State
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("Created with Origin Studio");
+  const [description, setDescription] = useState("Created with VRSNS");
   const [price, setPrice] = useState("0.001");
   const [durationDays, setDurationDays] = useState(7);
   const [royaltyPercent, setRoyaltyPercent] = useState(10);
@@ -970,7 +970,7 @@ function CreatePageInner() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="mint-price">Price (CAMP)</Label>
+                  <Label htmlFor="mint-price">Price (ETH)</Label>
                   <Input
                     id="mint-price"
                     type="number"
